@@ -7,7 +7,13 @@
     "longName": "Months Calendar Watchface",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/background.png",
+                "name": "IMAGE_BACKGROUND",
+                "type": "png"
+            }
+        ]
     },
     "sdkVersion": "3",
     "shortName": "Months",
