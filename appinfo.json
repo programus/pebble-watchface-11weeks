@@ -1,0 +1,23 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "programus@gmail.com",
+    "longName": "Months Calendar Watchface",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "sdkVersion": "3",
+    "shortName": "Months",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "5d124af2-30f2-44b2-a32d-b459a159b489",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
