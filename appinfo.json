@@ -9,68 +9,8 @@
     "resources": {
         "media": [
             {
-                "file": "images/background.png",
-                "name": "IMAGE_BACKGROUND",
-                "type": "png"
-            },
-            {
-                "file": "images/2x5_0.png",
-                "name": "IMAGE_2X5_0",
-                "type": "png"
-            },
-            {
-                "file": "images/2x5_1.png",
-                "name": "IMAGE_2X5_1",
-                "type": "png"
-            },
-            {
-                "file": "images/2x5_2.png",
-                "name": "IMAGE_2X5_2",
-                "type": "png"
-            },
-            {
-                "file": "images/2x5_3.png",
-                "name": "IMAGE_2X5_3",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_0.png",
-                "name": "IMAGE_3X5_0",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_1.png",
-                "name": "IMAGE_3X5_1",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_2.png",
-                "name": "IMAGE_3X5_2",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_3.png",
-                "name": "IMAGE_3X5_3",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_4.png",
-                "name": "IMAGE_3X5_4",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_5.png",
-                "name": "IMAGE_3X5_5",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_6.png",
-                "name": "IMAGE_3X5_6",
-                "type": "png"
-            },
-            {
-                "file": "images/3x5_7.png",
-                "name": "IMAGE_3X5_7",
+                "file": "images/3x5_9.png",
+                "name": "IMAGE_3X5_9",
                 "type": "png"
             },
             {
@@ -79,8 +19,68 @@
                 "type": "png"
             },
             {
-                "file": "images/3x5_9.png",
-                "name": "IMAGE_3X5_9",
+                "file": "images/3x5_7.png",
+                "name": "IMAGE_3X5_7",
+                "type": "png"
+            },
+            {
+                "file": "images/3x5_6.png",
+                "name": "IMAGE_3X5_6",
+                "type": "png"
+            },
+            {
+                "file": "images/3x5_5.png",
+                "name": "IMAGE_3X5_5",
+                "type": "png"
+            },
+            {
+                "file": "images/3x5_4.png",
+                "name": "IMAGE_3X5_4",
+                "type": "png"
+            },
+            {
+                "file": "images/3x5_3.png",
+                "name": "IMAGE_3X5_3",
+                "type": "png"
+            },
+            {
+                "file": "images/3x5_2.png",
+                "name": "IMAGE_3X5_2",
+                "type": "png"
+            },
+            {
+                "file": "images/3x5_1.png",
+                "name": "IMAGE_3X5_1",
+                "type": "png"
+            },
+            {
+                "file": "images/3x5_0.png",
+                "name": "IMAGE_3X5_0",
+                "type": "png"
+            },
+            {
+                "file": "images/2x5_3.png",
+                "name": "IMAGE_2X5_3",
+                "type": "png"
+            },
+            {
+                "file": "images/2x5_2.png",
+                "name": "IMAGE_2X5_2",
+                "type": "png"
+            },
+            {
+                "file": "images/2x5_1.png",
+                "name": "IMAGE_2X5_1",
+                "type": "png"
+            },
+            {
+                "file": "images/2x5_0.png",
+                "name": "IMAGE_2X5_0",
+                "type": "png"
+            },
+            {
+                "file": "images/background.png",
+                "name": "IMAGE_BACKGROUND",
                 "type": "png"
             }
         ]
