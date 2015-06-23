@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "calendar_layer.h"
 #include "main.h"
   
 static Window* s_main_window;
