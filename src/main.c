@@ -3,8 +3,7 @@
 #include "main.h"
   
 static Window* s_main_window;
-static BitmapLayer* s_background_layer;
-static GBitmap* s_background_bitmap;
+static Layer* s_calendar_layer;
 
 
 static void init() {
@@ -32,18 +31,15 @@ static void deinit() {
 }
 
 static void main_window_load(Window* window) {
-  // Create background BitmapLayer
-  s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
-  s_background_layer = bitmap_layer_create(GRect(0, 0, 144, 168));
-  bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
-  layer_add_child(window_get_root_layer(s_main_window), bitmap_layer_get_layer(s_background_layer));
+  // create calendar layer
+  calendar_layer_create();
+  s_calendar_layer = calendar_layer_get();
+  layer_add_child(window_get_root_layer(s_main_window), s_calendar_layer);
 }
 
 static void main_window_unload(Window* window) {
-  // destroy bitmap
-  gbitmap_destroy(s_background_bitmap);
-  // destroy background layer
-  bitmap_layer_destroy(s_background_layer);
+  // destroy calendar layer
+  calendar_layer_destroy();
 }
 
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
@@ -51,9 +47,7 @@ static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
 }
 
 static void update_time() {
-  // Get a tm struct
-  time_t temp = time(NULL);
-  struct tm* tick_time = localtime(&temp);
+  layer_mark_dirty(s_calendar_layer);
 }
 
 int main(void) {
