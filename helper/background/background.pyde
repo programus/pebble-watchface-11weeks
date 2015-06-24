@@ -1,5 +1,5 @@
 bw = 2 + 2 + 2 + 1
-cw = 6 + bw
+cw = 7 + bw
 ch = 5 + bw
 path = '../../resources/images'
 
@@ -12,7 +12,7 @@ def setup():
 def draw():
     ww = cw * 7 + 1
     left = (width - ww) >> 1
-    right = width - left
+    right = width - left - 1
     top = ch * 1.5
     y = top
     bottom = y

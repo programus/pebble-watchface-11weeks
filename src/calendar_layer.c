@@ -4,11 +4,11 @@
 #define N2X5  4
 #define N3X5  10
   
-#define SX    27    // start point x
+#define SX    23    // start point x
 #define SY    19    // start point y
 #define DX    3     // margin x
 #define DY    3     // margin y
-#define CW    13    // cell width
+#define CW    14    // cell width
 #define CH    12    // cell height
 #define WN    11    // number of weeks
   
@@ -72,9 +72,9 @@ static void calendar_layer_draw_dates(GContext* ctx) {
 
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today) {
   GPoint start_point = GPoint(SX + DX + CW * wday, SY + DY + CH * week);
-  GRect rect2x5 = GRect(start_point.x, start_point.y, 2, 5);
-  GRect rect3x5 = GRect(start_point.x + 3, start_point.y, 3, 5);
-  graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_2x5[mday / 10], rect2x5);
+  GRect rect3x5 = GRect(start_point.x, start_point.y, 3, 5);
+  graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_3x5[mday / 10], rect3x5);
+  rect3x5.origin.x += 4
   graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_3x5[mday % 10], rect3x5);
   if (is_today) {
     GRect rect_mark = GRect(start_point.x - DX + 1, start_point.y - DX + 0, CW - 3, CH - 1);
