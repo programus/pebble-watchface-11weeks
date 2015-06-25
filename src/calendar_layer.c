@@ -2,7 +2,6 @@
 #include "calendar_layer.h"
   
 typedef uint8_t buffer_t;
-#define ARRAY_LEN(w, h)    ((((w - 1) >> 3) + 1) * h)
 #define SCREEN_WIDTH  144
 #define SCREEN_HEIGHT 168
 
@@ -50,7 +49,6 @@ static struct tm now;
 
 static void create_numbers();
 static void destroy_numbers();
-static void graphics_draw_bitmap_in_rect_xor(GContext* ctx, GBitmap* bmp, GRect rect);
 static void update_time();
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx);
 static void calendar_layer_draw_time(GContext* ctx);
@@ -67,16 +65,41 @@ static void update_bg_buffer(GContext* ctx) {
   
   buffer_t* frame_buffer = gbitmap_get_data(bmp);
   s_bg_row_size_byte = gbitmap_get_bytes_per_row(bmp);
-  size_t size = ARRAY_LEN(bounds.size.w, bounds.size.h);
+#ifdef PBL_BW
+  size_t size = s_bg_row_size_byte * bounds.size.h;
+#elif PBL_COLOR
+  size_t size = bounds.size.w * bounds.size.h;
+#endif
   if (!s_bg_buffer) {
     s_bg_buffer_size = size;
-    s_bg_buffer = (buffer_t*) malloc(s_bg_buffer_size);
+    s_bg_buffer = (buffer_t*) malloc(s_bg_buffer_size * sizeof(buffer_t));
   } else if (s_bg_buffer_size < size) {
     s_bg_buffer_size = size;
-    s_bg_buffer = (buffer_t*) realloc(s_bg_buffer, s_bg_buffer_size);
+    s_bg_buffer = (buffer_t*) realloc(s_bg_buffer, s_bg_buffer_size * sizeof(buffer_t));
   }
-  memcpy(s_bg_buffer, frame_buffer, s_bg_buffer_size);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "s_bg_size = (%d, %d), s_bg_row_size_byte = %d, s_bg_buffer_size = %d, size = %d", 
+          s_bg_size.w, s_bg_size.h, s_bg_row_size_byte, s_bg_buffer_size, size);
+  memcpy(s_bg_buffer, frame_buffer, s_bg_buffer_size * sizeof(buffer_t));
   graphics_release_frame_buffer(ctx, bmp);
+  
+  char* buff = (char*) malloc(s_bg_size.w);
+  
+  int index = 0;
+  for (int y = 0; y < s_bg_size.h; y++) {
+    for (int x = 0; x < s_bg_size.w; x++) {
+      int di = x >> 3;
+      int shift = x & 07;
+      buffer_t mask = 0x80 >> shift;
+      if (s_bg_buffer[index + di] & mask) {
+        buff[x] = 'X';
+      } else {
+        buff[x] = '.';
+      }
+    }
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%3d, %4d: %s", y, index, buff);
+    index += s_bg_row_size_byte;
+  }
+  free(buff);
 }
 
 static void destroy_bg_buffer() {
@@ -89,19 +112,15 @@ static void destroy_bg_buffer() {
 
 static uint8_t get_pixel_from_buffer(int x, int y) {
 #ifdef PBL_BW
-  int index = y * s_bg_row_size_byte + (x >> 3);
+  int index = y * (s_bg_row_size_byte) + (x >> 3);
   buffer_t shift = x & 0x07;
   buffer_t mask = 0x80 >> shift;
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "(%d, %d) => %d, %x", x, y, index, mask);
   return (s_bg_buffer[index] & mask) ? 1 : 0;
 #elif PBL_COLOR
   int index = y * s_bg_size.w + x;
   return s_bg_buffer[index];
 #endif
-}
-
-static void graphics_draw_bitmap_in_rect_xor(GContext* ctx, GBitmap* bmp, GRect rect) {
-  graphics_context_set_compositing_mode(ctx, get_pixel_from_buffer(rect.origin.x, rect.origin.y) == 0 ? GCompOpAssign : GCompOpAssignInverted);
-  graphics_draw_bitmap_in_rect(ctx, bmp, rect);
 }
 
 static void update_time() {
@@ -165,14 +184,17 @@ static void calendar_layer_draw_dates(GContext* ctx) {
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today) {
   GPoint start_point = GPoint(SX + DX + CW * wday, SY + DY + CH * week);
   GRect rect3x5 = GRect(start_point.x, start_point.y, 3, 5);
+  bool is_black_bg = !get_pixel_from_buffer(start_point.x - DX + 1, start_point.y - DY + 1);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "(%d, %d) == (%d, %d) -> %d", wday, week, start_point.x, start_point.y, is_black_bg);
+  graphics_context_set_compositing_mode(ctx, is_black_bg ? GCompOpAssign : GCompOpAssignInverted);
   if (mday > 9) {
-    graphics_draw_bitmap_in_rect_xor(ctx, s_bitmap_numbers_3x5[mday / 10], rect3x5);
+    graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_3x5[mday / 10], rect3x5);
   }
   rect3x5.origin.x += 4;
-  graphics_draw_bitmap_in_rect_xor(ctx, s_bitmap_numbers_3x5[mday % 10], rect3x5);
+  graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_3x5[mday % 10], rect3x5);
   if (is_today) {
     GRect rect_mark = GRect(start_point.x - DX + 1, start_point.y - DX + 0, CW - 3, CH - 1);
-    graphics_context_set_stroke_color(ctx, get_pixel_from_buffer(start_point.x, start_point.y) == 0 ? GColorWhite : GColorBlack);
+    graphics_context_set_stroke_color(ctx, is_black_bg ? GColorWhite : GColorBlack);
     graphics_draw_rect(ctx, rect_mark);
   }
 }
