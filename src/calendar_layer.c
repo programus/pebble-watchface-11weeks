@@ -1,6 +1,8 @@
 #include <pebble.h>
 #include "calendar_layer.h"
   
+typedef uint8_t buffer_t;
+#define ARRAY_LEN(w, h)    ((((w - 1) >> 3) + 1) * h)
 #define SCREEN_WIDTH  144
 #define SCREEN_HEIGHT 168
 
@@ -21,10 +23,17 @@
 static GBitmap* s_bitmap_background;
 static Layer* s_layer_calendar;
 
-// numbers 2x5 in one pic
-static GBitmap* s_bitmap_number_2x5;
-// numbers 2x5: 0-3
-static GBitmap* s_bitmap_numbers_2x5[N2X5];
+// a pointer to painted background buffer.
+static buffer_t* s_bg_buffer = NULL;
+static size_t s_bg_buffer_size = 0;
+static GSize s_bg_size = {0};
+// row size byte for background buffer.
+static int s_bg_row_size_byte;
+
+// // numbers 2x5 in one pic
+// static GBitmap* s_bitmap_number_2x5;
+// // numbers 2x5: 0-3
+// static GBitmap* s_bitmap_numbers_2x5[N2X5];
 // numbers 3x5 in one pic
 static GBitmap* s_bitmap_number_3x5;
 // numbers 3x5: 0-9
@@ -47,11 +56,51 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx);
 static void calendar_layer_draw_time(GContext* ctx);
 static void calendar_layer_draw_dates(GContext* ctx);
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today);
+static void update_bg_buffer(GContext* ctx);
+static void destroy_bg_buffer();
+static uint8_t get_pixel_from_buffer(int x, int y);
+
+static void update_bg_buffer(GContext* ctx) {
+  GBitmap* bmp = graphics_capture_frame_buffer(ctx);
+  GRect bounds = gbitmap_get_bounds(bmp);
+  memcpy(&s_bg_size, &(bounds.size), sizeof(GSize));
+  
+  buffer_t* frame_buffer = gbitmap_get_data(bmp);
+  s_bg_row_size_byte = gbitmap_get_bytes_per_row(bmp);
+  size_t size = ARRAY_LEN(bounds.size.w, bounds.size.h);
+  if (!s_bg_buffer) {
+    s_bg_buffer_size = size;
+    s_bg_buffer = (buffer_t*) malloc(s_bg_buffer_size);
+  } else if (s_bg_buffer_size < size) {
+    s_bg_buffer_size = size;
+    s_bg_buffer = (buffer_t*) realloc(s_bg_buffer, s_bg_buffer_size);
+  }
+  memcpy(s_bg_buffer, frame_buffer, s_bg_buffer_size);
+  graphics_release_frame_buffer(ctx, bmp);
+}
+
+static void destroy_bg_buffer() {
+  if (s_bg_buffer) {
+    free(s_bg_buffer);
+    s_bg_buffer = NULL;
+    s_bg_buffer_size = 0;
+  }
+}
+
+static uint8_t get_pixel_from_buffer(int x, int y) {
+#ifdef PBL_BW
+  int index = y * s_bg_row_size_byte + (x >> 3);
+  buffer_t shift = x & 0x07;
+  buffer_t mask = 0x80 >> shift;
+  return (s_bg_buffer[index] & mask) ? 1 : 0;
+#elif PBL_COLOR
+  int index = y * s_bg_size.w + x;
+  return s_bg_buffer[index];
+#endif
+}
 
 static void graphics_draw_bitmap_in_rect_xor(GContext* ctx, GBitmap* bmp, GRect rect) {
-  graphics_context_set_compositing_mode(ctx, GCompOpOr);
-  graphics_draw_bitmap_in_rect(ctx, bmp, rect);
-  graphics_context_set_compositing_mode(ctx, GCompOpClear);
+  graphics_context_set_compositing_mode(ctx, get_pixel_from_buffer(rect.origin.x, rect.origin.y) == 0 ? GCompOpAssign : GCompOpAssignInverted);
   graphics_draw_bitmap_in_rect(ctx, bmp, rect);
 }
 
@@ -59,24 +108,20 @@ static void update_time() {
   time(&now_t);
   struct tm* st = localtime(&now_t);
   memcpy(&now, st, sizeof(now));
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d", now.tm_year + 1900, now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d", 
+          now.tm_year + 1900, now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
 }
 
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
   // update current time
   update_time();
   
-  // fill black
-  GRect rect = GRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, rect, 0, GCornerNone);
-  
   // draw time
   calendar_layer_draw_time(ctx);
   
   // draw calendar grids
   graphics_context_set_compositing_mode(ctx, GCompOpOr);
-  rect = gbitmap_get_bounds(s_bitmap_background);
+  GRect rect = gbitmap_get_bounds(s_bitmap_background);
   graphics_draw_bitmap_in_rect(ctx, s_bitmap_background, rect);
   
   // draw calendar
@@ -95,6 +140,9 @@ static void calendar_layer_draw_time(GContext* ctx) {
 }
 
 static void calendar_layer_draw_dates(GContext* ctx) {
+  // update background buffer
+  update_bg_buffer(ctx);
+  
   // at least 1 previous weeks
   time_t t = now_t - 604800;        // 3600 * 24 * 7
   struct tm* st = localtime(&t);
@@ -124,7 +172,7 @@ static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday
   graphics_draw_bitmap_in_rect_xor(ctx, s_bitmap_numbers_3x5[mday % 10], rect3x5);
   if (is_today) {
     GRect rect_mark = GRect(start_point.x - DX + 1, start_point.y - DX + 0, CW - 3, CH - 1);
-    graphics_context_set_stroke_color(ctx, GColorWhite);
+    graphics_context_set_stroke_color(ctx, get_pixel_from_buffer(start_point.x, start_point.y) == 0 ? GColorWhite : GColorBlack);
     graphics_draw_rect(ctx, rect_mark);
   }
 }
@@ -147,21 +195,22 @@ Layer* calendar_layer_get() {
 }
 
 void calendar_layer_destroy() {
+  destroy_bg_buffer();
   layer_destroy(s_layer_calendar);
   destroy_numbers();
   gbitmap_destroy(s_bitmap_background);
 }
 
 static void create_numbers() {
-  s_bitmap_number_2x5 = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_NUMBER_2X5);
-  GRect rect = GRect(0, 0, 2, 5);
-  for (int i = 0; i < N2X5; i++) {
-    s_bitmap_numbers_2x5[i] = gbitmap_create_as_sub_bitmap(s_bitmap_number_2x5, rect);
-    rect.origin.x += rect.size.w;
-  }
+//   s_bitmap_number_2x5 = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_NUMBER_2X5);
+//   GRect rect = GRect(0, 0, 2, 5);
+//   for (int i = 0; i < N2X5; i++) {
+//     s_bitmap_numbers_2x5[i] = gbitmap_create_as_sub_bitmap(s_bitmap_number_2x5, rect);
+//     rect.origin.x += rect.size.w;
+//   }
   
   s_bitmap_number_3x5 = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_NUMBER_3X5);
-  rect = GRect(0, 0, 3, 5);
+  GRect rect = GRect(0, 0, 3, 5);
   for (int i = 0; i < N3X5; i++) {
     s_bitmap_numbers_3x5[i] = gbitmap_create_as_sub_bitmap(s_bitmap_number_3x5, rect);
     rect.origin.x += rect.size.w;
@@ -175,10 +224,10 @@ static void create_numbers() {
 }
 
 static void destroy_numbers() {
-  for (int i = 0; i < N2X5; i++) {
-    gbitmap_destroy(s_bitmap_numbers_2x5[i]);
-  }
-  gbitmap_destroy(s_bitmap_number_2x5);
+//   for (int i = 0; i < N2X5; i++) {
+//     gbitmap_destroy(s_bitmap_numbers_2x5[i]);
+//   }
+//   gbitmap_destroy(s_bitmap_number_2x5);
   
   for (int i = 0; i < N3X5; i++) {
     gbitmap_destroy(s_bitmap_numbers_3x5[i]);

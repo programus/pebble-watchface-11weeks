@@ -16,6 +16,9 @@ static void init() {
     .unload = main_window_unload
   });
   
+  // set background color
+  window_set_background_color(s_main_window, GColorBlack);
+  
   // show window on the watch, with animated = true
   window_stack_push(s_main_window, true);
   
