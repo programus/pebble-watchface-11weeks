@@ -30,3 +30,8 @@
 
 # Debug files
 *.dSYM/
+
+# Pebble files
+/build/
+.lock-waf_darwin_build
+
