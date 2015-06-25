@@ -77,8 +77,6 @@ static void update_bg_buffer(GContext* ctx) {
     s_bg_buffer_size = size;
     s_bg_buffer = (buffer_t*) realloc(s_bg_buffer, s_bg_buffer_size * sizeof(buffer_t));
   }
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "s_bg_size = (%d, %d), s_bg_row_size_byte = %d, s_bg_buffer_size = %d, size = %d", 
-          s_bg_size.w, s_bg_size.h, s_bg_row_size_byte, s_bg_buffer_size, size);
   memcpy(s_bg_buffer, frame_buffer, s_bg_buffer_size * sizeof(buffer_t));
   graphics_release_frame_buffer(ctx, bmp);
   
@@ -116,7 +114,6 @@ static uint8_t get_pixel_from_buffer(int x, int y) {
   int index = y * (s_bg_row_size_byte) + (x >> 3);
   buffer_t shift = x & 0x07;
   buffer_t mask = 1 << shift;
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "(%d, %d) => %d, %x", x, y, index, mask);
   return (s_bg_buffer[index] & mask) ? 1 : 0;
 #elif PBL_COLOR
   int index = y * s_bg_size.w + x;
@@ -186,7 +183,6 @@ static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday
   GPoint start_point = GPoint(SX + DX + CW * wday, SY + DY + CH * week);
   GRect rect3x5 = GRect(start_point.x, start_point.y, 3, 5);
   bool is_black_bg = !get_pixel_from_buffer(start_point.x - DX + 1, start_point.y - DY + 1);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "(%d, %d) == (%d, %d) -> %d", wday, week, start_point.x, start_point.y, is_black_bg);
   graphics_context_set_compositing_mode(ctx, is_black_bg ? GCompOpAssign : GCompOpAssignInverted);
   if (mday > 9) {
     graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_3x5[mday / 10], rect3x5);
