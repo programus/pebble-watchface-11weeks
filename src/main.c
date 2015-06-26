@@ -1,12 +1,15 @@
 #include <pebble.h>
-#include "calendar_layer.h"
 #include "main.h"
+#include "calendar_layer.h"
+#include "tiny_numbers.h"
   
 static Window* s_main_window;
 static Layer* s_calendar_layer;
 
 
 static void init() {
+  // init numbers
+  numbers_create();
   // initialize main window instance
   s_main_window = window_create();
   
@@ -26,17 +29,18 @@ static void init() {
   update_time();
   
   // register the time tick service
-  tick_timer_service_subscribe(MINUTE_UNIT, tick_handler);
+  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
 }
 
 static void deinit() {
   window_destroy(s_main_window);
+  numbers_destroy();
 }
 
 static void main_window_load(Window* window) {
   // create calendar layer
   calendar_layer_create();
-  s_calendar_layer = calendar_layer_get();
+  s_calendar_layer = calendar_layer_get_layer();
   layer_add_child(window_get_root_layer(s_main_window), s_calendar_layer);
 }
 

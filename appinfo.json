@@ -9,8 +9,8 @@
     "resources": {
         "media": [
             {
-                "file": "images/big_number_3x5.png",
-                "name": "IMAGE_BIG_NUMBER_3X5",
+                "file": "images/background.png",
+                "name": "IMAGE_BACKGROUND",
                 "type": "png"
             },
             {
@@ -19,8 +19,8 @@
                 "type": "png"
             },
             {
-                "file": "images/background.png",
-                "name": "IMAGE_BACKGROUND",
+                "file": "images/big_number_3x5.png",
+                "name": "IMAGE_BIG_NUMBER_3X5",
                 "type": "png"
             }
         ]

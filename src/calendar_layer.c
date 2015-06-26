@@ -1,22 +1,10 @@
 #include <pebble.h>
 #include "calendar_layer.h"
+#include "const.h"
+#include "tiny_numbers.h"
   
 typedef uint8_t buffer_t;
-#define SCREEN_WIDTH  144
-#define SCREEN_HEIGHT 168
 
-#define N2X5  4
-#define N3X5  10
-  
-#define SX    23    // start point x
-#define SY    19    // start point y
-#define DX    3     // margin x
-#define DY    3     // margin y
-#define CW    14    // cell width
-#define CH    12    // cell height
-#define WN    11    // number of weeks
-  
-#define DW    7     // days in a week
 #define MIN_END_MON   28  // min days in a month
 
 static GBitmap* s_bitmap_background;
@@ -29,29 +17,15 @@ static GSize s_bg_size = {0};
 // row size byte for background buffer.
 static int s_bg_row_size_byte;
 
-// // numbers 2x5 in one pic
-// static GBitmap* s_bitmap_number_2x5;
-// // numbers 2x5: 0-3
-// static GBitmap* s_bitmap_numbers_2x5[N2X5];
-// numbers 3x5 in one pic
-static GBitmap* s_bitmap_number_3x5;
-// numbers 3x5: 0-9
-static GBitmap* s_bitmap_numbers_3x5[N3X5];
-// big numbers 3x5 in one pic
-static GBitmap* s_bitmap_big_number_3x5;
-// big numbers 3x5: 0-9
-static GBitmap* s_bitmap_big_numbers_3x5[N3X5];
-
 // variable to store current time in time_t
 static time_t now_t;
 // variable to store current time in struct tm
 static struct tm now;
 
-static void create_numbers();
-static void destroy_numbers();
 static void update_time();
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx);
 static void calendar_layer_draw_time(GContext* ctx);
+static void calendar_layer_draw_sec(GContext* ctx);
 static void calendar_layer_draw_dates(GContext* ctx);
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today);
 static void update_bg_buffer(GContext* ctx);
@@ -133,6 +107,8 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
   // update current time
   update_time();
   
+  // draw second
+  calendar_layer_draw_sec(ctx);
   // draw time
   calendar_layer_draw_time(ctx);
   
@@ -146,14 +122,24 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
 }
 
 static void calendar_layer_draw_time(GContext* ctx) {
-  GRect rect = GRect(SX, SY, CW * 3 - 1, CH * 5 - 1);
-  graphics_draw_bitmap_in_rect(ctx, s_bitmap_big_numbers_3x5[now.tm_hour / 10], rect);
-  rect.origin.x += rect.size.w + 1 + CW;
-  graphics_draw_bitmap_in_rect(ctx, s_bitmap_big_numbers_3x5[now.tm_hour % 10], rect);
-  rect.origin.y += rect.size.h + 1 + CH;
-  graphics_draw_bitmap_in_rect(ctx, s_bitmap_big_numbers_3x5[now.tm_min % 10], rect);
-  rect.origin.x -= rect.size.w + 1 + CW;
-  graphics_draw_bitmap_in_rect(ctx, s_bitmap_big_numbers_3x5[now.tm_min / 10], rect);
+  int x = SX;
+  int y = SY;
+  int dx = CW << 2;
+  int dy = CH * 6;
+  graphics_draw_big_number(ctx, now.tm_hour / 10, x, y);
+  x += dx;
+  graphics_draw_big_number(ctx, now.tm_hour % 10, x, y);
+  y += dy;
+  graphics_draw_big_number(ctx, now.tm_min % 10, x, y);
+  x -= dx;
+  graphics_draw_big_number(ctx, now.tm_min / 10, x, y);
+}
+
+static void calendar_layer_draw_sec(GContext* ctx) {
+  int x = (SCREEN_WIDTH >> 1) - TN_WIDTH - 1;
+  int y = SEC_SY + DY;
+  graphics_draw_tiny_number(ctx, now.tm_sec / 10, x, y);
+  graphics_draw_tiny_number(ctx, now.tm_sec % 10, x + TN_WIDTH + 1, y);
 }
 
 static void calendar_layer_draw_dates(GContext* ctx) {
@@ -181,17 +167,34 @@ static void calendar_layer_draw_dates(GContext* ctx) {
 
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today) {
   GPoint start_point = GPoint(SX + DX + CW * wday, SY + DY + CH * week);
-  GRect rect3x5 = GRect(start_point.x, start_point.y, 3, 5);
   bool is_black_bg = !get_pixel_from_buffer(start_point.x - DX + 1, start_point.y - DY + 1);
   graphics_context_set_compositing_mode(ctx, is_black_bg ? GCompOpAssign : GCompOpAssignInverted);
   if (mday > 9) {
-    graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_3x5[mday / 10], rect3x5);
+    graphics_draw_tiny_number(ctx, mday / 10, start_point.x, start_point.y);
   }
-  rect3x5.origin.x += 4;
-  graphics_draw_bitmap_in_rect(ctx, s_bitmap_numbers_3x5[mday % 10], rect3x5);
+  graphics_draw_tiny_number(ctx, mday % 10, start_point.x + 4, start_point.y);
   if (is_today) {
+    // mark current day
     GRect rect_mark = GRect(start_point.x - DX + 1, start_point.y - DX + 0, CW - 3, CH - 1);
     graphics_context_set_stroke_color(ctx, is_black_bg ? GColorWhite : GColorBlack);
+    graphics_draw_rect(ctx, rect_mark);
+    // mark the week
+    int x = SX - 2;
+    int y = rect_mark.origin.y + (rect_mark.size.h >> 1);
+    GPoint p[3] = {
+      GPoint(x - 2, y - 2),
+      GPoint(x, y),
+      GPoint(x - 2, y + 2)
+    };
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+    for (int i = 0; i < 2; i++) {
+      graphics_draw_pixel(ctx, p[i]);
+      graphics_draw_line(ctx, p[i], p[i + 1]);
+    }
+    // mark weekday
+    rect_mark.size.h -= 2;
+    rect_mark.origin.y = SY - rect_mark.size.h;
+    graphics_context_set_stroke_color(ctx, GColorWhite);
     graphics_draw_rect(ctx, rect_mark);
   }
 }
@@ -199,8 +202,6 @@ static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday
 void calendar_layer_create() {
   // create background image.
   s_bitmap_background = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
-  // create all numbers images.
-  create_numbers();
   // get background image bounds.
   GRect bounds = gbitmap_get_bounds(s_bitmap_background);
   // create calendar layer
@@ -209,52 +210,12 @@ void calendar_layer_create() {
   layer_set_update_proc(s_layer_calendar, calendar_layer_update_proc);
 }
 
-Layer* calendar_layer_get() {
+Layer* calendar_layer_get_layer() {
   return s_layer_calendar;
 }
 
 void calendar_layer_destroy() {
   destroy_bg_buffer();
   layer_destroy(s_layer_calendar);
-  destroy_numbers();
   gbitmap_destroy(s_bitmap_background);
-}
-
-static void create_numbers() {
-//   s_bitmap_number_2x5 = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_NUMBER_2X5);
-//   GRect rect = GRect(0, 0, 2, 5);
-//   for (int i = 0; i < N2X5; i++) {
-//     s_bitmap_numbers_2x5[i] = gbitmap_create_as_sub_bitmap(s_bitmap_number_2x5, rect);
-//     rect.origin.x += rect.size.w;
-//   }
-  
-  s_bitmap_number_3x5 = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_NUMBER_3X5);
-  GRect rect = GRect(0, 0, 3, 5);
-  for (int i = 0; i < N3X5; i++) {
-    s_bitmap_numbers_3x5[i] = gbitmap_create_as_sub_bitmap(s_bitmap_number_3x5, rect);
-    rect.origin.x += rect.size.w;
-  }
-  s_bitmap_big_number_3x5 = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BIG_NUMBER_3X5);
-  rect = GRect(0, 0, 3 * CW - 1, 5 * CH - 1);
-  for (int i = 0; i < N3X5; i++) {
-    s_bitmap_big_numbers_3x5[i] = gbitmap_create_as_sub_bitmap(s_bitmap_big_number_3x5, rect);
-    rect.origin.x += rect.size.w + 1;
-  }
-}
-
-static void destroy_numbers() {
-//   for (int i = 0; i < N2X5; i++) {
-//     gbitmap_destroy(s_bitmap_numbers_2x5[i]);
-//   }
-//   gbitmap_destroy(s_bitmap_number_2x5);
-  
-  for (int i = 0; i < N3X5; i++) {
-    gbitmap_destroy(s_bitmap_numbers_3x5[i]);
-  }
-  gbitmap_destroy(s_bitmap_number_3x5);
-  
-  for (int i = 0; i < N3X5; i++) {
-    gbitmap_destroy(s_bitmap_big_numbers_3x5[i]);
-  }
-  gbitmap_destroy(s_bitmap_big_number_3x5);
 }
