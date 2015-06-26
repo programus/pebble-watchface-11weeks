@@ -9,11 +9,6 @@
     "resources": {
         "media": [
             {
-                "file": "images/number_2x5.png",
-                "name": "IMAGE_NUMBER_2X5",
-                "type": "png"
-            },
-            {
                 "file": "images/big_number_3x5.png",
                 "name": "IMAGE_BIG_NUMBER_3X5",
                 "type": "png"
