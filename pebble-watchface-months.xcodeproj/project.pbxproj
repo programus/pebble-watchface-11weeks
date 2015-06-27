@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1420B49E7433493C8B6261EA /* numbers.c in Sources */ = {isa = PBXBuildFile; fileRef = C4135A2D4BE941D28853F631 /* numbers.c */; };
 		7AECDC7025604471BEC42D11 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 6EC3C1E4B44D42158909986A /* main.c */; };
+		B62FFBDB1B3EECB200134A08 /* sec_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = B62FFBD91B3EECB200134A08 /* sec_layer.c */; };
 		B7D97EB74DAE4D789BC05E90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C15B2356C4B6443CB3DCB1CA /* Foundation.framework */; };
 		D227DC46503942A88CD61B02 /* calendar_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA1120D224F95B6C3796F /* calendar_layer.c */; };
 /* End PBXBuildFile section */
@@ -19,6 +20,8 @@
 		6EC3C1E4B44D42158909986A /* main.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		8D5B038EA2994DA999DAE93B /* calendar_layer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = calendar_layer.h; sourceTree = "<group>"; };
 		AF2DA1120D224F95B6C3796F /* calendar_layer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = calendar_layer.c; sourceTree = "<group>"; };
+		B62FFBD91B3EECB200134A08 /* sec_layer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sec_layer.c; sourceTree = "<group>"; };
+		B62FFBDA1B3EECB200134A08 /* sec_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sec_layer.h; sourceTree = "<group>"; };
 		C15B2356C4B6443CB3DCB1CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		C4135A2D4BE941D28853F631 /* numbers.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = numbers.c; sourceTree = "<group>"; };
 		C5F0A33E89C14546BD10AD6A /* fake-iOS-target.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fake-iOS-target.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -50,13 +53,15 @@
 		B4438DF2015C47BCB5BEBA39 /* sources */ = {
 			isa = PBXGroup;
 			children = (
-				AF2DA1120D224F95B6C3796F /* calendar_layer.c */,
-				6EC3C1E4B44D42158909986A /* main.c */,
-				C4135A2D4BE941D28853F631 /* numbers.c */,
-				8D5B038EA2994DA999DAE93B /* calendar_layer.h */,
 				CF393C8DB1594A948C497892 /* const.h */,
+				AF2DA1120D224F95B6C3796F /* calendar_layer.c */,
+				8D5B038EA2994DA999DAE93B /* calendar_layer.h */,
+				6EC3C1E4B44D42158909986A /* main.c */,
 				45DD517834764A8C819068F0 /* main.h */,
+				C4135A2D4BE941D28853F631 /* numbers.c */,
 				D663E11137614BFFB233B234 /* numbers.h */,
+				B62FFBD91B3EECB200134A08 /* sec_layer.c */,
+				B62FFBDA1B3EECB200134A08 /* sec_layer.h */,
 			);
 			name = sources;
 			path = src;
@@ -75,19 +80,19 @@
 /* End PBXGroup section */
 
 /* Begin PBXLegacyTarget section */
-		37E14A77320F41119E4EEB5E /* Pebble */ = {
+		B62FFBD11B3EE30200134A08 /* pebble build */ = {
 			isa = PBXLegacyTarget;
 			buildArgumentsString = build;
-			buildConfigurationList = 1006C3D7697C4C1CB96B08AF /* Build configuration list for PBXLegacyTarget "Pebble" */;
+			buildConfigurationList = B62FFBD21B3EE30200134A08 /* Build configuration list for PBXLegacyTarget "pebble build" */;
 			buildPhases = (
 			);
 			buildToolPath = /usr/local/bin/pebble;
 			buildWorkingDirectory = "";
 			dependencies = (
 			);
-			name = Pebble;
-			passBuildSettingsInEnvironment = 0;
-			productName = Pebble;
+			name = "pebble build";
+			passBuildSettingsInEnvironment = 1;
+			productName = "pebble build";
 		};
 /* End PBXLegacyTarget section */
 
@@ -115,6 +120,11 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0500;
+				TargetAttributes = {
+					B62FFBD11B3EE30200134A08 = {
+						CreatedOnToolsVersion = 6.3.2;
+					};
+				};
 			};
 			buildConfigurationList = 82EF47DAE50F426C8C597F40 /* Build configuration list for PBXProject "pebble-watchface-months" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -128,8 +138,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				37E14A77320F41119E4EEB5E /* Pebble */,
 				AFAE45A18584417FA4EE7A81 /* fake-iOS-target */,
+				B62FFBD11B3EE30200134A08 /* pebble build */,
 			);
 		};
 /* End PBXProject section */
@@ -142,6 +152,7 @@
 				D227DC46503942A88CD61B02 /* calendar_layer.c in Sources */,
 				7AECDC7025604471BEC42D11 /* main.c in Sources */,
 				1420B49E7433493C8B6261EA /* numbers.c in Sources */,
+				B62FFBDB1B3EECB200134A08 /* sec_layer.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,7 +184,8 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"/Users/programus/git-repos.localized/Cellar/pebble-sdk/3.0/Pebble/include",
+					"/usr/local/Cellar/pebble-sdk/3.0/Pebble/aplite/include",
+					"/usr/local/Cellar/pebble-sdk/3.0/Pebble/basalt/include",
 					build,
 				);
 				VALIDATE_PRODUCT = YES;
@@ -239,12 +251,57 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"/Users/programus/git-repos.localized/Cellar/pebble-sdk/3.0/Pebble/include",
+					"/usr/local/Cellar/pebble-sdk/3.0/Pebble/aplite/include",
+					"/usr/local/Cellar/pebble-sdk/3.0/Pebble/basalt/include",
 					build,
 				);
 				ONLY_ACTIVE_ARCH = YES;
 			};
 			name = Debug;
+		};
+		B62FFBD31B3EE30200134A08 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B62FFBD41B3EE30200134A08 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
 		};
 		C6BC8219D6664B1D8E04DA5F /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -272,74 +329,9 @@
 			};
 			name = Debug;
 		};
-		F5AFBDD2243043FA987CCAC7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				DSTROOT = /tmp/xcodeproj.dst;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-			};
-			name = Debug;
-		};
-		FAFC1DB6809641EAB593428C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DSTROOT = /tmp/xcodeproj.dst;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
-				INSTALL_PATH = "$(BUILT_PRODUCTS_DIR)";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
-				OTHER_CFLAGS = (
-					"-DNS_BLOCK_ASSERTIONS=1",
-					"$(inherited)",
-				);
-				OTHER_CPLUSPLUSFLAGS = (
-					"-DNS_BLOCK_ASSERTIONS=1",
-					"$(inherited)",
-				);
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1006C3D7697C4C1CB96B08AF /* Build configuration list for PBXLegacyTarget "Pebble" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				FAFC1DB6809641EAB593428C /* Release */,
-				F5AFBDD2243043FA987CCAC7 /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		48C642F732CE4202ACEB44C7 /* Build configuration list for PBXNativeTarget "fake-iOS-target" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -357,6 +349,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		B62FFBD21B3EE30200134A08 /* Build configuration list for PBXLegacyTarget "pebble build" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B62FFBD31B3EE30200134A08 /* Debug */,
+				B62FFBD41B3EE30200134A08 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

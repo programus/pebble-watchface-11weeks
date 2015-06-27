@@ -25,7 +25,6 @@ static struct tm now;
 static void update_time();
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx);
 static void calendar_layer_draw_time(GContext* ctx);
-static void calendar_layer_draw_sec(GContext* ctx);
 static void calendar_layer_draw_dates(GContext* ctx);
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today);
 static void update_bg_buffer(GContext* ctx);
@@ -107,8 +106,6 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
   // update current time
   update_time();
   
-  // draw second
-  calendar_layer_draw_sec(ctx);
   // draw time
   calendar_layer_draw_time(ctx);
   
@@ -133,13 +130,6 @@ static void calendar_layer_draw_time(GContext* ctx) {
   graphics_draw_big_number(ctx, now.tm_min % 10, x, y);
   x -= dx;
   graphics_draw_big_number(ctx, now.tm_min / 10, x, y);
-}
-
-static void calendar_layer_draw_sec(GContext* ctx) {
-  int x = (SCREEN_WIDTH >> 1) - TN_WIDTH - 1;
-  int y = SEC_SY + DY;
-  graphics_draw_tiny_number(ctx, now.tm_sec / 10, x, y);
-  graphics_draw_tiny_number(ctx, now.tm_sec % 10, x + TN_WIDTH + 1, y);
 }
 
 static void calendar_layer_draw_dates(GContext* ctx) {

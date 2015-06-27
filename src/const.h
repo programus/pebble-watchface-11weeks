@@ -12,4 +12,7 @@
 #define WN        11    // number of weeks
 #define DW        7     // days in a week
 
-#define SEC_SY    (SY + CH * WN)
+#define SEC_SX    SX
+#define SEC_SY    (SY + CH * WN + DY)
+#define SEC_W     (CW * DW - 1)
+#define SEC_H     5

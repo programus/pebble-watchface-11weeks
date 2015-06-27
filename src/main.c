@@ -1,10 +1,12 @@
 #include <pebble.h>
 #include "main.h"
 #include "calendar_layer.h"
+#include "sec_layer.h"
 #include "numbers.h"
   
 static Window* s_main_window;
 static Layer* s_calendar_layer;
+static Layer* s_sec_layer;
 
 
 static void init() {
@@ -42,11 +44,17 @@ static void main_window_load(Window* window) {
   calendar_layer_create();
   s_calendar_layer = calendar_layer_get_layer();
   layer_add_child(window_get_root_layer(s_main_window), s_calendar_layer);
+  // create sec layer
+  sec_layer_create();
+  s_sec_layer = sec_layer_get_layer();
+  layer_add_child(window_get_root_layer(s_main_window), s_sec_layer);
 }
 
 static void main_window_unload(Window* window) {
   // destroy calendar layer
   calendar_layer_destroy();
+  // destroy sec layer
+  sec_layer_destroy();
 }
 
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
@@ -54,6 +62,7 @@ static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
 }
 
 static void update_time() {
+  layer_mark_dirty(s_sec_layer);
   layer_mark_dirty(s_calendar_layer);
 }
 
