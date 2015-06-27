@@ -1,7 +1,7 @@
 #include <pebble.h>
 #include "main.h"
 #include "calendar_layer.h"
-#include "tiny_numbers.h"
+#include "numbers.h"
   
 static Window* s_main_window;
 static Layer* s_calendar_layer;

@@ -1,7 +1,7 @@
 #include <pebble.h>
 #include "calendar_layer.h"
 #include "const.h"
-#include "tiny_numbers.h"
+#include "numbers.h"
   
 typedef uint8_t buffer_t;
 

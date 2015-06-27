@@ -1,6 +1,6 @@
 #include <pebble.h>
 #include "const.h"
-#include "tiny_numbers.h"
+#include "numbers.h"
 
 // numbers 3x5 in one pic
 static GBitmap* s_bitmap_number = NULL;
