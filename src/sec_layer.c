@@ -21,7 +21,6 @@ static void update_time();
 static void update_proc(Layer* layer, GContext* ctx);
 static void draw_sec_number(GContext* ctx);
 static void draw_sec_marks(GContext* ctx);
-static void update_sec_frame(Layer* layer);
 
 static void update_time() {
   time_t t = time(NULL);
