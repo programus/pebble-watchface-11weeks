@@ -174,13 +174,15 @@ static void calendar_layer_draw_dates(GContext* ctx) {
 }
 
 static void calendar_layer_draw_year(GContext* ctx, int tm_year, int week) {
-  GPoint p = GPoint(SX - TN_WIDTH - DX - 1, SY + DY + CH * week);
+  GPoint p = GPoint(SX - (TN_WIDTH << 1) - DX - 2, SY + CH * week);
   int year = tm_year + 1900;
-  while (year > 0) {
-    graphics_draw_tiny_number(ctx, year, p.x, p.y);
-    year /= 10;
-    p.x -= TN_WIDTH + 1;
-  }
+  graphics_draw_tiny_number(ctx, year / 1000, p.x, p.y);
+  p.x += TN_WIDTH + 2;
+  graphics_draw_tiny_number(ctx, year / 100, p.x, p.y);
+  p.y += TN_HEIGHT + 1;
+  graphics_draw_tiny_number(ctx, year, p.x, p.y);
+  p.x -= TN_WIDTH + 2;
+  graphics_draw_tiny_number(ctx, year / 10, p.x, p.y);
 }
 
 static void calendar_layer_draw_mon(GContext* ctx, int tm_mon, int week) {
