@@ -7,6 +7,16 @@ typedef uint8_t buffer_t;
 
 #define MIN_END_MON   28  // min days in a month
 
+static const GPathInfo RARROW_PATH_INFO = {
+  .num_points = 3,
+  .points = (GPoint[]) {
+    {-2, -2},
+    {0, 0},
+    {-2, 2}
+  }
+};
+static GPath* s_right_arrow_path;
+
 static GBitmap* s_bitmap_background;
 static Layer* s_layer_calendar;
 
@@ -27,6 +37,7 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx);
 static void calendar_layer_draw_time(GContext* ctx);
 static void calendar_layer_draw_year(GContext* ctx, int tm_year, int week);
 static void calendar_layer_draw_mon(GContext* ctx, int tm_mon, int week);
+static void calendar_layer_draw_curr_week_indicator(GContext* ctx, int week, bool is_left_side);
 static void calendar_layer_draw_dates(GContext* ctx);
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today);
 static void update_bg_buffer(GContext* ctx);
@@ -147,13 +158,15 @@ static void calendar_layer_draw_dates(GContext* ctx) {
   
   for (int week = 0; week < WN; week++) {
     int start_mday = st->tm_mday;
+    bool include_today = false;
     for (int wday = 0; wday < DW; wday++) {
-      calendar_layer_draw_date(ctx, wday, week, st->tm_mday, 
-                               (st->tm_mon == now.tm_mon && st->tm_mday == now.tm_mday && st->tm_year == now.tm_year));
+      bool is_today = st->tm_mon == now.tm_mon && st->tm_mday == now.tm_mday && st->tm_year == now.tm_year;
+      calendar_layer_draw_date(ctx, wday, week, st->tm_mday, is_today);
       st->tm_mday++;
       if (st->tm_mday >= MIN_END_MON) {
         mktime(st);
       }
+      include_today = include_today || is_today;
     }
     
     bool need_display_year = week == 0 || (st->tm_mon == 0 && st->tm_mday > 1);
@@ -163,18 +176,22 @@ static void calendar_layer_draw_dates(GContext* ctx) {
       // draw year at the beginning and for new year
       graphics_context_set_compositing_mode(ctx, GCompOpAssign);
       calendar_layer_draw_year(ctx, st->tm_year, week);
+    } else if (include_today) {
+      calendar_layer_draw_curr_week_indicator(ctx, week, true);
     }
     
     if (need_display_mon) {
       // draw month infomation at the beginning of the month
       graphics_context_set_compositing_mode(ctx, GCompOpAssign);
       calendar_layer_draw_mon(ctx, st->tm_mon, week);
+    } else if (include_today) {
+      calendar_layer_draw_curr_week_indicator(ctx, week, false);
     }
   }
 }
 
 static void calendar_layer_draw_year(GContext* ctx, int tm_year, int week) {
-  GPoint p = GPoint(SX - (TN_WIDTH << 1) - DX - 2, SY + CH * week);
+  GPoint p = GPoint(SX - (TN_WIDTH << 1) - DX - 3, SY + CH * week);
   int year = tm_year + 1900;
   graphics_draw_tiny_number(ctx, year / 1000, p.x, p.y);
   p.x += TN_WIDTH + 2;
@@ -193,6 +210,18 @@ static void calendar_layer_draw_mon(GContext* ctx, int tm_mon, int week) {
   graphics_draw_tiny_number(ctx, mon, p.x, p.y);
 }
 
+static void calendar_layer_draw_curr_week_indicator(GContext* ctx, int week, bool is_left_side) {
+  GPoint p = GPoint(is_left_side ? SX - DX - 2 : SX + DW * CW + DX, SY + CH * week + (CH >> 1));
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+  
+  // rotate 180 degrees if on right.
+  gpath_rotate_to(s_right_arrow_path, is_left_side ? 0 : TRIG_MAX_ANGLE >> 1);
+  gpath_move_to(s_right_arrow_path, p);
+  gpath_draw_outline(ctx, s_right_arrow_path);
+  gpath_draw_filled(ctx, s_right_arrow_path);
+}
+
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today) {
   GPoint start_point = GPoint(SX + DX + CW * wday, SY + DY + CH * week);
   bool is_black_bg = !get_pixel_from_buffer(start_point.x - DX + 1, start_point.y - DY + 1);
@@ -206,19 +235,6 @@ static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday
     GRect rect_mark = GRect(start_point.x - DX + 1, start_point.y - DX + 0, CW - 3, CH - 1);
     graphics_context_set_stroke_color(ctx, is_black_bg ? GColorWhite : GColorBlack);
     graphics_draw_rect(ctx, rect_mark);
-    // mark the week
-    int x = SX - 2;
-    int y = rect_mark.origin.y + (rect_mark.size.h >> 1);
-    GPoint p[3] = {
-      GPoint(x - 2, y - 2),
-      GPoint(x, y),
-      GPoint(x - 2, y + 2)
-    };
-    graphics_context_set_stroke_color(ctx, GColorWhite);
-    for (int i = 0; i < 2; i++) {
-      graphics_draw_pixel(ctx, p[i]);
-      graphics_draw_line(ctx, p[i], p[i + 1]);
-    }
     // mark weekday
     rect_mark.origin.x -= 1;
     rect_mark.size.w += 2;
@@ -236,6 +252,8 @@ void calendar_layer_create() {
   GRect bounds = gbitmap_get_bounds(s_bitmap_background);
   // create calendar layer
   s_layer_calendar = layer_create(bounds);
+  // create arrow path
+  s_right_arrow_path = gpath_create(&RARROW_PATH_INFO);
   // set custom update proc
   layer_set_update_proc(s_layer_calendar, calendar_layer_update_proc);
 }
@@ -248,4 +266,5 @@ void calendar_layer_destroy() {
   destroy_bg_buffer();
   layer_destroy(s_layer_calendar);
   gbitmap_destroy(s_bitmap_background);
+  gpath_destroy(s_right_arrow_path);
 }
