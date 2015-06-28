@@ -82,11 +82,11 @@
 /* Begin PBXLegacyTarget section */
 		B62FFBD11B3EE30200134A08 /* pebble build */ = {
 			isa = PBXLegacyTarget;
-			buildArgumentsString = build;
+			buildArgumentsString = "build --pebble-sdk=/usr/local/Cellar/pebble-sdk/3.0";
 			buildConfigurationList = B62FFBD21B3EE30200134A08 /* Build configuration list for PBXLegacyTarget "pebble build" */;
 			buildPhases = (
 			);
-			buildToolPath = /usr/local/bin/pebble;
+			buildToolPath = /usr/bin/pebblex;
 			buildWorkingDirectory = "";
 			dependencies = (
 			);
@@ -357,6 +357,7 @@
 				B62FFBD41B3EE30200134A08 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
