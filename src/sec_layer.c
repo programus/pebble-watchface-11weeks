@@ -11,7 +11,7 @@
 #include "numbers.h"
 
 #define MARK_W    10
-#define MARK_H    2
+#define MARK_H    3
 
 static struct tm* s_now;
 
@@ -26,16 +26,17 @@ static void update_sec_frame(Layer* layer);
 static void update_time() {
   time_t t = time(NULL);
   s_now = localtime(&t);
+  srand(t);
 }
 
 static void update_proc(Layer* layer, GContext* ctx) {
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
   graphics_context_set_stroke_color(ctx, GColorWhite);
+  graphics_context_set_fill_color(ctx, GColorWhite);
   
   update_time();
   draw_sec_marks(ctx);
   draw_sec_number(ctx);
-  update_sec_frame(layer);
 }
 
 static void draw_sec_number(GContext* ctx) {
@@ -46,31 +47,19 @@ static void draw_sec_number(GContext* ctx) {
 }
 
 static void draw_sec_marks(GContext* ctx) {
-  GRect rect = GRect(((CW - MARK_W) >> 1) - 1, (SEC_H - MARK_H) >> 1, MARK_W, MARK_H);
+  GRect base_rect = GRect(((CW - MARK_W) >> 1) - 1, (SEC_H - MARK_H) >> 1, MARK_W, MARK_H);
   for (int i = 0; i < DW; i++) {
-    if (i != 3) {
-      graphics_draw_rect(ctx, rect);
+    GRect rect = base_rect;
+    int index = (i > 3) ? i - 1 : i;
+    int cent = s_now->tm_sec / 10;
+    if (index <= cent && i != 3) {
+      if (index == cent) {
+        rect.size.w = s_now->tm_sec % 10;
+      }
+      graphics_fill_rect(ctx, rect, 0, GCornerNone);
     }
-    rect.origin.x += CW;
+    base_rect.origin.x += CW;
   }
-}
-
-static void update_sec_frame(Layer* layer) {
-  int margin = (CW - MARK_W);
-  int lost = (margin >> 1) + (s_now->tm_sec >> 1);
-  lost += s_now->tm_sec / (MARK_W << 1) * margin;
-  GRect frame = GRect(SEC_SX, SEC_SY, SEC_W, SEC_H);
-  GRect bounds = frame;
-  int l_lost = lost + (s_now->tm_sec & 1);
-  int r_lost = lost;
-  frame.origin.x += l_lost;
-  frame.size.w -= l_lost + r_lost;
-  layer_set_frame(layer, frame);
-  bounds.origin.x = -l_lost;
-  bounds.origin.y = 0;
-  layer_set_bounds(layer, bounds);
-  
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "frame: (%d, %d, %d, %d) / bounds: (%d, %d, %d, %d)", frame.origin.x, frame.origin.y, frame.size.w, frame.size.h, bounds.origin.x, bounds.origin.y, bounds.size.w, bounds.size.h);
 }
 
 void sec_layer_create() {
