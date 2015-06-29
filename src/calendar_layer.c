@@ -211,7 +211,7 @@ static void calendar_layer_draw_mon(GContext* ctx, int tm_mon, int week) {
 }
 
 static void calendar_layer_draw_curr_week_indicator(GContext* ctx, int week, bool is_left_side) {
-  GPoint p = GPoint(is_left_side ? SX - DX - 2 : SX + DW * CW + DX, SY + CH * week + (CH >> 1));
+  GPoint p = GPoint(is_left_side ? SX - DX - 2 : SX + DW * CW + DX, SY + CH * week + (CH >> 1) - 1);
   graphics_context_set_fill_color(ctx, GColorWhite);
   graphics_context_set_stroke_color(ctx, GColorWhite);
   
