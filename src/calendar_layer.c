@@ -28,11 +28,10 @@ static GSize s_bg_size = {0};
 static int s_bg_row_size_byte;
 
 // variable to store current time in time_t
-static time_t now_t;
+static time_t* s_now_t = NULL;
 // variable to store current time in struct tm
-static struct tm now;
+static struct tm* s_now = NULL;
 
-static void update_time();
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx);
 static void calendar_layer_draw_time(GContext* ctx);
 static void calendar_layer_draw_year(GContext* ctx, int tm_year, int week);
@@ -107,28 +106,24 @@ static uint8_t get_pixel_from_buffer(int x, int y) {
 #endif
 }
 
-static void update_time() {
-  time(&now_t);
-  struct tm* st = localtime(&now_t);
-  memcpy(&now, st, sizeof(now));
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d", 
-          now.tm_year + 1900, now.tm_mon + 1, now.tm_mday, now.tm_hour, now.tm_min, now.tm_sec);
+void calendar_layer_update_time(time_t* time, struct tm* tm) {
+  s_now_t = time;
+  s_now = tm;
 }
 
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
-  // update current time
-  update_time();
-  
-  // draw time
-  calendar_layer_draw_time(ctx);
-  
-  // draw calendar grids
-  graphics_context_set_compositing_mode(ctx, GCompOpOr);
-  GRect rect = gbitmap_get_bounds(s_bitmap_background);
-  graphics_draw_bitmap_in_rect(ctx, s_bitmap_background, rect);
-  
-  // draw calendar
-  calendar_layer_draw_dates(ctx);
+  if (s_now && s_now_t) {
+    // draw time
+    calendar_layer_draw_time(ctx);
+    
+    // draw calendar grids
+    graphics_context_set_compositing_mode(ctx, GCompOpOr);
+    GRect rect = gbitmap_get_bounds(s_bitmap_background);
+    graphics_draw_bitmap_in_rect(ctx, s_bitmap_background, rect);
+    
+    // draw calendar
+    calendar_layer_draw_dates(ctx);
+  }
 }
 
 static void calendar_layer_draw_time(GContext* ctx) {
@@ -136,13 +131,13 @@ static void calendar_layer_draw_time(GContext* ctx) {
   int y = SY;
   int dx = CW << 2;
   int dy = CH * 6;
-  graphics_draw_big_number(ctx, now.tm_hour / 10, x, y);
+  graphics_draw_big_number(ctx, s_now->tm_hour / 10, x, y);
   x += dx;
-  graphics_draw_big_number(ctx, now.tm_hour % 10, x, y);
+  graphics_draw_big_number(ctx, s_now->tm_hour % 10, x, y);
   y += dy;
-  graphics_draw_big_number(ctx, now.tm_min % 10, x, y);
+  graphics_draw_big_number(ctx, s_now->tm_min % 10, x, y);
   x -= dx;
-  graphics_draw_big_number(ctx, now.tm_min / 10, x, y);
+  graphics_draw_big_number(ctx, s_now->tm_min / 10, x, y);
 }
 
 static void calendar_layer_draw_dates(GContext* ctx) {
@@ -150,7 +145,7 @@ static void calendar_layer_draw_dates(GContext* ctx) {
   update_bg_buffer(ctx);
   
   // at least 1 previous weeks
-  time_t t = now_t - 604800;        // 3600 * 24 * 7
+  time_t t = *s_now_t - 604800;        // 3600 * 24 * 7
   struct tm* st = localtime(&t);
   // get the 1st week of this calendar.
   for (st->tm_mday -= st->tm_wday; st->tm_mday > 1; st->tm_mday -= 7);
@@ -160,7 +155,7 @@ static void calendar_layer_draw_dates(GContext* ctx) {
     int start_mday = st->tm_mday;
     bool include_today = false;
     for (int wday = 0; wday < DW; wday++) {
-      bool is_today = st->tm_mon == now.tm_mon && st->tm_mday == now.tm_mday && st->tm_year == now.tm_year;
+      bool is_today = st->tm_mon == s_now->tm_mon && st->tm_mday == s_now->tm_mday && st->tm_year == s_now->tm_year;
       calendar_layer_draw_date(ctx, wday, week, st->tm_mday, is_today);
       st->tm_mday++;
       if (st->tm_mday >= MIN_END_MON) {

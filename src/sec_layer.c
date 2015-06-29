@@ -13,29 +13,27 @@
 #define MARK_W    10
 #define MARK_H    3
 
-static struct tm* s_now;
+static struct tm* s_now = NULL;
 
 static Layer* s_sec_layer;
 
-static void update_time();
 static void update_proc(Layer* layer, GContext* ctx);
 static void draw_sec_number(GContext* ctx);
 static void draw_sec_marks(GContext* ctx);
 
-static void update_time() {
-  time_t t = time(NULL);
-  s_now = localtime(&t);
-  srand(t);
+void sec_layer_update_time(time_t* time, struct tm* tm) {
+  s_now = tm;
 }
 
 static void update_proc(Layer* layer, GContext* ctx) {
-  graphics_context_set_compositing_mode(ctx, GCompOpAssign);
-  graphics_context_set_stroke_color(ctx, GColorWhite);
-  graphics_context_set_fill_color(ctx, GColorWhite);
-  
-  update_time();
-  draw_sec_marks(ctx);
-  draw_sec_number(ctx);
+  if (s_now) {
+    graphics_context_set_compositing_mode(ctx, GCompOpAssign);
+    graphics_context_set_stroke_color(ctx, GColorWhite);
+    graphics_context_set_fill_color(ctx, GColorWhite);
+    
+    draw_sec_marks(ctx);
+    draw_sec_number(ctx);
+  }
 }
 
 static void draw_sec_number(GContext* ctx) {
