@@ -2,6 +2,7 @@
 #include "calendar_layer.h"
 #include "const.h"
 #include "numbers.h"
+#include "letters.h"
   
 typedef uint8_t buffer_t;
 
@@ -16,6 +17,11 @@ static const GPathInfo RARROW_PATH_INFO = {
   }
 };
 static GPath* s_right_arrow_path;
+
+static const char* const MON_NAMES[] = {
+  "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+  "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+};
 
 static GBitmap* s_bitmap_background;
 static Layer* s_layer_calendar;
@@ -207,10 +213,7 @@ static void calendar_layer_draw_year(GContext* ctx, int tm_year, int week) {
 
 static void calendar_layer_draw_mon(GContext* ctx, int tm_mon, int week) {
   GPoint p = GPoint(SX + DW * CW + DX, SY + DY + CH * week);
-  int mon = tm_mon + 1;
-  graphics_draw_tiny_number(ctx, mon / 10, p.x, p.y);
-  p.x += TN_WIDTH + 2;
-  graphics_draw_tiny_number(ctx, mon, p.x, p.y);
+  graphics_draw_tiny_string(ctx, MON_NAMES[tm_mon], p.x, p.y, 1);
 }
 
 static void calendar_layer_draw_curr_week_indicator(GContext* ctx, int week, bool is_left_side) {

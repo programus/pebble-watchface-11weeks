@@ -3,6 +3,7 @@
 #include "calendar_layer.h"
 #include "sec_layer.h"
 #include "numbers.h"
+#include "letters.h"
   
 static Window* s_main_window;
 static Layer* s_calendar_layer;
@@ -21,6 +22,8 @@ static void update_time(bool is_init);
 static void init() {
   // init numbers
   numbers_create();
+  // init letters
+  letters_create();
   // initialize main window instance
   s_main_window = window_create();
   
@@ -45,6 +48,7 @@ static void init() {
 
 static void deinit() {
   window_destroy(s_main_window);
+  letters_destroy();
   numbers_destroy();
 }
 
