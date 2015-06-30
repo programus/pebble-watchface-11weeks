@@ -11,6 +11,12 @@ static Layer* s_sec_layer;
 static time_t s_now_t;
 static struct tm s_now_tm;
 
+static void init();
+static void deinit();
+static void main_window_load(Window*);
+static void main_window_unload(Window*);
+static void tick_handler(struct tm*, TimeUnits);
+static void update_time(bool is_init);
 
 static void init() {
   // init numbers
@@ -31,7 +37,7 @@ static void init() {
   window_stack_push(s_main_window, true);
   
   // display time from the beginning
-  update_time();
+  update_time(true);
   
   // register the time tick service
   tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
@@ -61,10 +67,10 @@ static void main_window_unload(Window* window) {
 }
 
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
-  update_time();
+  update_time(false);
 }
 
-static void update_time() {
+static void update_time(bool is_init) {
   time(&s_now_t);
   struct tm* st = localtime(&s_now_t);
   memcpy(&s_now_tm, st, sizeof(s_now_tm));
@@ -72,9 +78,11 @@ static void update_time() {
           s_now_tm.tm_year + 1900, s_now_tm.tm_mon + 1, s_now_tm.tm_mday, s_now_tm.tm_hour, s_now_tm.tm_min, s_now_tm.tm_sec);
   
   sec_layer_update_time(&s_now_t, &s_now_tm);
-  calendar_layer_update_time(&s_now_t, &s_now_tm);
   layer_mark_dirty(s_sec_layer);
-  layer_mark_dirty(s_calendar_layer);
+  if (is_init || s_now_tm.tm_sec == 0) {
+    calendar_layer_update_time(&s_now_t, &s_now_tm);
+    layer_mark_dirty(s_calendar_layer);
+  }
 }
 
 int main(void) {
