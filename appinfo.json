@@ -22,6 +22,11 @@
                 "file": "images/big_number_3x5.png",
                 "name": "IMAGE_BIG_NUMBER_3X5",
                 "type": "png"
+            },
+            {
+                "file": "images/cap_letters.png",
+                "name": "IMAGE_CAP_LETTERS_3X5",
+                "type": "png"
             }
         ]
     },

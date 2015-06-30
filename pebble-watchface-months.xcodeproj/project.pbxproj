@@ -10,6 +10,7 @@
 		1420B49E7433493C8B6261EA /* numbers.c in Sources */ = {isa = PBXBuildFile; fileRef = C4135A2D4BE941D28853F631 /* numbers.c */; };
 		7AECDC7025604471BEC42D11 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 6EC3C1E4B44D42158909986A /* main.c */; };
 		B62FFBDB1B3EECB200134A08 /* sec_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = B62FFBD91B3EECB200134A08 /* sec_layer.c */; };
+		B642DA751B42D0BE0068CFF0 /* letters.c in Sources */ = {isa = PBXBuildFile; fileRef = B642DA731B42D0BE0068CFF0 /* letters.c */; };
 		B7D97EB74DAE4D789BC05E90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C15B2356C4B6443CB3DCB1CA /* Foundation.framework */; };
 		D227DC46503942A88CD61B02 /* calendar_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA1120D224F95B6C3796F /* calendar_layer.c */; };
 /* End PBXBuildFile section */
@@ -22,6 +23,8 @@
 		AF2DA1120D224F95B6C3796F /* calendar_layer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = calendar_layer.c; sourceTree = "<group>"; };
 		B62FFBD91B3EECB200134A08 /* sec_layer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sec_layer.c; sourceTree = "<group>"; };
 		B62FFBDA1B3EECB200134A08 /* sec_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sec_layer.h; sourceTree = "<group>"; };
+		B642DA731B42D0BE0068CFF0 /* letters.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = letters.c; sourceTree = "<group>"; };
+		B642DA741B42D0BE0068CFF0 /* letters.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = letters.h; sourceTree = "<group>"; };
 		C15B2356C4B6443CB3DCB1CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		C4135A2D4BE941D28853F631 /* numbers.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = numbers.c; sourceTree = "<group>"; };
 		C5F0A33E89C14546BD10AD6A /* fake-iOS-target.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fake-iOS-target.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,6 +65,8 @@
 				D663E11137614BFFB233B234 /* numbers.h */,
 				B62FFBD91B3EECB200134A08 /* sec_layer.c */,
 				B62FFBDA1B3EECB200134A08 /* sec_layer.h */,
+				B642DA731B42D0BE0068CFF0 /* letters.c */,
+				B642DA741B42D0BE0068CFF0 /* letters.h */,
 			);
 			name = sources;
 			path = src;
@@ -151,6 +156,7 @@
 			files = (
 				D227DC46503942A88CD61B02 /* calendar_layer.c in Sources */,
 				7AECDC7025604471BEC42D11 /* main.c in Sources */,
+				B642DA751B42D0BE0068CFF0 /* letters.c in Sources */,
 				1420B49E7433493C8B6261EA /* numbers.c in Sources */,
 				B62FFBDB1B3EECB200134A08 /* sec_layer.c in Sources */,
 			);
