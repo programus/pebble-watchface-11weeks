@@ -131,9 +131,17 @@ static void calendar_layer_draw_time(GContext* ctx) {
   int y = SY;
   int dx = CW << 2;
   int dy = CH * 6;
-  graphics_draw_big_number(ctx, s_now->tm_hour / 10, x, y);
+  int hour = s_now->tm_hour;
+  if (!clock_is_24h_style()) {
+    if (hour > 12) {
+      hour -= 12;
+    } else if (hour == 0) {
+      hour = 12;
+    }
+  }
+  graphics_draw_big_number(ctx, hour / 10, x, y);
   x += dx;
-  graphics_draw_big_number(ctx, s_now->tm_hour % 10, x, y);
+  graphics_draw_big_number(ctx, hour % 10, x, y);
   y += dy;
   graphics_draw_big_number(ctx, s_now->tm_min % 10, x, y);
   x -= dx;
