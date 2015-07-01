@@ -2,7 +2,7 @@
 //  letters.h
 //  pebble-watchface-months
 //
-//  Created by 王元 on 15/6/30.
+//  Created by Programus on 15/6/30.
 //
 //
 
