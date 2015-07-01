@@ -1,44 +1,62 @@
 {
-    "appKeys": {},
-    "capabilities": [
-        ""
-    ],
-    "companyName": "programus@gmail.com",
-    "longName": "Months Calendar Watchface",
-    "projectType": "native",
-    "resources": {
-        "media": [
-            {
-                "file": "images/background.png",
-                "name": "IMAGE_BACKGROUND",
-                "type": "png"
-            },
-            {
-                "file": "images/number_3x5.png",
-                "name": "IMAGE_NUMBER_3X5",
-                "type": "png"
-            },
-            {
-                "file": "images/big_number_3x5.png",
-                "name": "IMAGE_BIG_NUMBER_3X5",
-                "type": "png"
-            },
-            {
-                "file": "images/cap_letters.png",
-                "name": "IMAGE_CAP_LETTERS_3X5",
-                "type": "png"
-            }
-        ]
-    },
-    "sdkVersion": "3",
-    "shortName": "Months",
-    "targetPlatforms": [
-        "aplite",
-        "basalt"
-    ],
-    "uuid": "5d124af2-30f2-44b2-a32d-b459a159b489",
-    "versionLabel": "1.0",
-    "watchapp": {
-        "watchface": true
-    }
+  "appKeys": {},
+  "capabilities": [ "" ],
+  "companyName": "programus@gmail.com",
+  "longName": "Months Calendar Watchface",
+  "projectType": "native",
+  "resources": {
+    "media": [
+              {
+              "file": "images/background.png",
+              "name": "IMAGE_BACKGROUND",
+              "type": "png"
+              },
+              {
+              "file": "images/number_3x5.png",
+              "name": "IMAGE_NUMBER_3X5",
+              "type": "png"
+              },
+              {
+              "file": "images/big_number_3x5.png",
+              "name": "IMAGE_BIG_NUMBER_3X5",
+              "type": "png"
+              },
+              {
+              "file": "images/cap_letters.png",
+              "name": "IMAGE_CAP_LETTERS_3X5",
+              "type": "png"
+              },
+              {
+              "file": "images/watch_battery.png",
+              "name": "IMAGE_WATCH_BATTERY",
+              "type": "png"
+              },
+              {
+              "file": "images/watch_battery_charging.png",
+              "name": "IMAGE_WATCH_BATTERY_CHARGING",
+              "type": "png"
+              },
+              {
+              "file": "images/phone_battery.png",
+              "name": "IMAGE_PHONE_BATTERY",
+              "type": "png"
+              },
+              {
+              "file": "images/phone_battery_charging.png",
+              "name": "IMAGE_PHONE_BATTERY_CHARGING",
+              "type": "png"
+              }
+              ]
+  },
+  "sdkVersion": "3",
+  "shortName": "Months",
+  "targetPlatforms": [
+                      "aplite",
+                      "basalt"
+                      ],
+  "uuid": "5d124af2-30f2-44b2-a32d-b459a159b489",
+  "versionLabel": "1.0",
+  "watchapp": {
+    "watchface": true
+  }
 }
