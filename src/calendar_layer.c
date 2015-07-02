@@ -178,8 +178,8 @@ static void calendar_layer_draw_dates(GContext* ctx) {
       include_today = include_today || is_today;
     }
     
-    bool need_display_year = week == 0 || (st->tm_mon == 0 && st->tm_mday > 1);
-    bool need_display_mon = st->tm_mday < start_mday && st->tm_mday > 1;
+    bool need_display_mon = st->tm_mday > 1 && st->tm_mday <= DW + 1;
+    bool need_display_year = week == 0 || (st->tm_mon == 0 && need_display_mon);
     
     if (need_display_year) {
       // draw year at the beginning and for new year
