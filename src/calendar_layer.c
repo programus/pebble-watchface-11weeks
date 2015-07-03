@@ -166,7 +166,6 @@ static void calendar_layer_draw_dates(GContext* ctx) {
   mktime(st);
   
   for (int week = 0; week < WN; week++) {
-    int start_mday = st->tm_mday;
     bool include_today = false;
     for (int wday = 0; wday < DW; wday++) {
       bool is_today = st->tm_mon == s_now->tm_mon && st->tm_mday == s_now->tm_mday && st->tm_year == s_now->tm_year;
