@@ -7,11 +7,13 @@
 #include "calendar_layer.h"
 #include "sec_layer.h"
 #include "watch_battery_layer.h"
+#include "phone_battery_layer.h"
 
 static Window* s_main_window;
 static Layer* s_calendar_layer;
 static Layer* s_sec_layer;
 static Layer* s_watch_battery_layer;
+static Layer* s_phone_battery_layer;
 
 static time_t s_now_t;
 static struct tm s_now_tm;
@@ -70,6 +72,10 @@ static void main_window_load(Window* window) {
   watch_battery_layer_create();
   s_watch_battery_layer = watch_battery_layer_get_layer();
   layer_add_child(window_get_root_layer(s_main_window), s_watch_battery_layer);
+  // create phone battery layer
+  phone_battery_layer_create();
+  s_phone_battery_layer = phone_battery_layer_get_layer();
+  layer_add_child(window_get_root_layer(s_main_window), s_phone_battery_layer);
   
   // display time from the beginning
   update_time(true);
@@ -84,6 +90,8 @@ static void main_window_unload(Window* window) {
   sec_layer_destroy();
   // destroy watch battery layer
   watch_battery_layer_destroy();
+  // destroy phone battery layer
+  phone_battery_layer_destroy();
 }
 
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
@@ -108,6 +116,13 @@ static void update_time(bool is_init) {
 static void battery_handler(BatteryChargeState charge_state) {
   watch_battery_layer_update(charge_state);
   layer_mark_dirty(s_watch_battery_layer);
+  
+  uint8_t state = charge_state.charge_percent;
+  if (charge_state.is_charging) {
+    state |= 0x80;
+  }
+  phone_battery_layer_update(state);
+  layer_mark_dirty(s_phone_battery_layer);
 }
 
 int main(void) {
