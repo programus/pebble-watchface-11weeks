@@ -14,6 +14,6 @@
 void phone_battery_layer_create();
 void phone_battery_layer_destroy();
 Layer* phone_battery_layer_get_layer();
-void phone_battery_layer_update(BatteryChargeState state);
+void phone_battery_layer_update(uint8_t state);
 
 #endif /* defined(__pebble_watchface_months__phone_battery_layer__) */

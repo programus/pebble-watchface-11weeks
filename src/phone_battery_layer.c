@@ -11,14 +11,20 @@
 #include "numbers.h"
 #include "letters.h"
 
-#define MARGIN    2
-#define SPACING_X 4
-#define SPACING_Y -1
+#define MARGIN          1
+#define SPACING_X       3
+#define SPACING_Y       -1
+
+#define CHARGING_MASK   0x80
+#define LEVEL_MASK      0x7f
+
+#define UNKNOW_LEVEL    "XX"
+#define FULL_LEVEL      "FL"
 
 static Layer* s_layer = NULL;
 static GBitmap* s_bitmap_battery = NULL;
 static GBitmap* s_bitmap_battery_charging = NULL;
-static BatteryChargeState s_charge_state = {0};
+static uint8_t s_charge_state = 0;
 
 static void update_proc(Layer* layer, GContext* ctx);
 
@@ -26,18 +32,22 @@ static void update_proc(Layer* layer, GContext* ctx) {
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
   GRect rect = gbitmap_get_bounds(s_bitmap_battery);
   // draw battery mark
-  GBitmap* bmp = s_charge_state.is_charging ? s_bitmap_battery_charging : s_bitmap_battery;
+  GBitmap* bmp = (s_charge_state & CHARGING_MASK) ? s_bitmap_battery_charging : s_bitmap_battery;
   graphics_draw_bitmap_in_rect(ctx, bmp, rect);
   // get number
-  int num = s_charge_state.charge_percent / 10;
+  int num = s_charge_state & LEVEL_MASK;
   GPoint p = {
     .x = rect.size.w + MARGIN,
     .y = ((rect.size.h - TN_HEIGHT) >> 1) + 1
   };
-  if (num < 10) {
+  if (num < 100) {
+    graphics_draw_tiny_number(ctx, num / 10, p.x, p.y);
+    p.x += MARGIN + TN_WIDTH;
     graphics_draw_tiny_number(ctx, num, p.x, p.y);
+  } else if (num == 100){
+    graphics_draw_tiny_string(ctx, FULL_LEVEL, p.x, p.y, MARGIN);
   } else {
-    graphics_draw_tiny_letter(ctx, 'F', p.x, p.y);
+    graphics_draw_tiny_string(ctx, UNKNOW_LEVEL, p.x, p.y, MARGIN);
   }
 }
 
@@ -49,8 +59,8 @@ void phone_battery_layer_create() {
   
   if (!s_layer) {
     GRect rect = gbitmap_get_bounds(s_bitmap_battery);
-    rect.size.w += MARGIN + TN_WIDTH;
-    rect.origin.x = SX - SPACING_X - 1 - rect.size.w;
+    rect.size.w += (MARGIN + TN_WIDTH) << 1;
+    rect.origin.x = SX + CW * DW + SPACING_X;
     rect.origin.y = SY + CH * WN + SPACING_Y;
     s_layer = layer_create(rect);
     layer_set_update_proc(s_layer, update_proc);
@@ -75,6 +85,6 @@ Layer* phone_battery_layer_get_layer() {
   return s_layer;
 }
 
-void phone_battery_layer_update(BatteryChargeState state) {
+void phone_battery_layer_update(uint8_t state) {
   s_charge_state = state;
 }
