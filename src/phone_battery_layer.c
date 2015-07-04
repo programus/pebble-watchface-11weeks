@@ -15,9 +15,6 @@
 #define SPACING_X       3
 #define SPACING_Y       -1
 
-#define CHARGING_MASK   0x80
-#define LEVEL_MASK      0x7f
-
 #define UNKNOW_LEVEL    "XX"
 #define FULL_LEVEL      "FL"
 
@@ -31,9 +28,6 @@ static void update_proc(Layer* layer, GContext* ctx);
 static void update_proc(Layer* layer, GContext* ctx) {
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
   GRect rect = gbitmap_get_bounds(s_bitmap_battery);
-  // draw battery mark
-  GBitmap* bmp = (s_charge_state & CHARGING_MASK) ? s_bitmap_battery_charging : s_bitmap_battery;
-  graphics_draw_bitmap_in_rect(ctx, bmp, rect);
   // get number
   int num = s_charge_state & LEVEL_MASK;
   GPoint p = {
@@ -46,8 +40,14 @@ static void update_proc(Layer* layer, GContext* ctx) {
     graphics_draw_tiny_number(ctx, num, p.x, p.y);
   } else if (num == 100){
     graphics_draw_tiny_string(ctx, FULL_LEVEL, p.x, p.y, MARGIN);
-  } else {
+  } else if (num == LEVEL_UNKNOWN){
     graphics_draw_tiny_string(ctx, UNKNOW_LEVEL, p.x, p.y, MARGIN);
+  }
+  
+  if (num != BATTERY_API_UNSUPPORTED) {
+    // draw battery mark
+    GBitmap* bmp = (s_charge_state & CHARGING_MASK) ? s_bitmap_battery_charging : s_bitmap_battery;
+    graphics_draw_bitmap_in_rect(ctx, bmp, rect);
   }
 }
 

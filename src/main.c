@@ -9,6 +9,11 @@
 #include "watch_battery_layer.h"
 #include "phone_battery_layer.h"
 
+#define KEY_PHONE_BATTERY    8
+
+static AppSync s_sync;
+static uint8_t* s_sync_buffer;
+
 static Window* s_main_window;
 static Layer* s_calendar_layer;
 static Layer* s_sec_layer;
@@ -25,6 +30,11 @@ static void main_window_unload(Window*);
 static void tick_handler(struct tm*, TimeUnits);
 static void update_time(bool is_init);
 static void battery_handler(BatteryChargeState charge_state);
+
+static void init_sync();
+static void deinit_sync();
+static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context);
+static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context);
 
 static void init() {
   // init numbers
@@ -49,11 +59,15 @@ static void init() {
   // register the battery service
   battery_state_service_subscribe(battery_handler);
   
+  // init AppSync
+  init_sync();
+  
   // show window on the watch, with animated = true
   window_stack_push(s_main_window, true);
 }
 
 static void deinit() {
+  deinit_sync();
   window_destroy(s_main_window);
   letters_destroy();
   numbers_destroy();
@@ -116,13 +130,44 @@ static void update_time(bool is_init) {
 static void battery_handler(BatteryChargeState charge_state) {
   watch_battery_layer_update(charge_state);
   layer_mark_dirty(s_watch_battery_layer);
+}
+
+static void init_sync() {
+  // setup AppSync
+  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
   
-  uint8_t state = charge_state.charge_percent;
-  if (charge_state.is_charging) {
-    state |= 0x80;
+  // setup initial value
+  Tuplet initial_values[] = {
+    TupletInteger(KEY_PHONE_BATTERY, LEVEL_UNKNOWN),
+  };
+  
+  // create buffer
+  uint32_t size = dict_calc_buffer_size_from_tuplets(initial_values, ARRAY_LENGTH(initial_values));
+  s_sync_buffer = malloc(size * sizeof(uint8_t));
+  
+  // Begin using AppSync
+  app_sync_init(&s_sync, s_sync_buffer, size, initial_values, ARRAY_LENGTH(initial_values), sync_changed_handler, sync_error_handler, NULL);
+}
+
+static void deinit_sync() {
+  app_sync_deinit(&s_sync);
+}
+
+static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
+  switch (key) {
+  case KEY_PHONE_BATTERY:
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "get battery state: %d, %d", (uint8_t)new_tuple->value->int32 & 0x80, (uint8_t)new_tuple->value->int32 & 0x7f);
+    phone_battery_layer_update((uint8_t) new_tuple->value->int32);
+    layer_mark_dirty(s_phone_battery_layer);
+    break;
+    
+  default:
+    break;
   }
-  phone_battery_layer_update(state);
-  layer_mark_dirty(s_phone_battery_layer);
+}
+
+static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "phone battery info sync error!");
 }
 
 int main(void) {

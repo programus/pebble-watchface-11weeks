@@ -31,6 +31,7 @@
 		B642DA771B44194A0068CFF0 /* watch_battery_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = watch_battery_layer.h; sourceTree = "<group>"; };
 		B642DA7C1B4579890068CFF0 /* phone_battery_layer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = phone_battery_layer.c; sourceTree = "<group>"; };
 		B642DA7D1B4579890068CFF0 /* phone_battery_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phone_battery_layer.h; sourceTree = "<group>"; };
+		B64AF5221B46CECC0036EE55 /* pebble-js-app.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "pebble-js-app.js"; path = "js/pebble-js-app.js"; sourceTree = "<group>"; };
 		C15B2356C4B6443CB3DCB1CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		C4135A2D4BE941D28853F631 /* numbers.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = numbers.c; sourceTree = "<group>"; };
 		C5F0A33E89C14546BD10AD6A /* fake-iOS-target.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fake-iOS-target.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,6 +63,7 @@
 		B4438DF2015C47BCB5BEBA39 /* sources */ = {
 			isa = PBXGroup;
 			children = (
+				B64AF5211B46CE5F0036EE55 /* js */,
 				CF393C8DB1594A948C497892 /* const.h */,
 				AF2DA1120D224F95B6C3796F /* calendar_layer.c */,
 				8D5B038EA2994DA999DAE93B /* calendar_layer.h */,
@@ -80,6 +82,14 @@
 			);
 			name = sources;
 			path = src;
+			sourceTree = "<group>";
+		};
+		B64AF5211B46CE5F0036EE55 /* js */ = {
+			isa = PBXGroup;
+			children = (
+				B64AF5221B46CECC0036EE55 /* pebble-js-app.js */,
+			);
+			name = js;
 			sourceTree = "<group>";
 		};
 		BD32068164694EA09C561960 = {

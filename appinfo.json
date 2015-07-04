@@ -1,5 +1,7 @@
 {
-  "appKeys": {},
+  "appKeys": {
+    "KEY_PHONE_BATTERY": 8
+  },
   "capabilities": [ "" ],
   "companyName": "programus@gmail.com",
   "longName": "Months Calendar Watchface",

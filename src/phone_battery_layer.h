@@ -11,6 +11,11 @@
 
 #include <pebble.h>
 
+#define CHARGING_MASK   0x80
+#define LEVEL_MASK      0x7f
+#define BATTERY_API_UNSUPPORTED   0x70
+#define LEVEL_UNKNOWN   0x7f
+
 void phone_battery_layer_create();
 void phone_battery_layer_destroy();
 Layer* phone_battery_layer_get_layer();
