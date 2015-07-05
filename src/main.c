@@ -203,6 +203,8 @@ static void bt_handler(bool connected) {
       layer_set_hidden(s_phone_battery_layer, false);
       need_bt_layer = false;
     }
+  } else {
+    vibes_double_pulse();
   }
   
   if (need_bt_layer) {
