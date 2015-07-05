@@ -8,12 +8,10 @@
 
 #include "bluetooth_layer.h"
 #include "const.h"
-#include "numbers.h"
-#include "letters.h"
 
 #define MARGIN          1
 #define SPACING_X       3
-#define SPACING_Y       -1
+#define SPACING_Y       0
 
 static Layer* s_layer = NULL;
 static GBitmap* s_bitmap_bluetooth = NULL;
@@ -27,39 +25,33 @@ static void update_proc(Layer* layer, GContext* ctx);
 
 static void update_proc(Layer* layer, GContext* ctx) {
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
+  // draw bluetooth mark
   GRect rect = gbitmap_get_bounds(s_bitmap_bluetooth);
-  // get number
-  int num = s_charge_state & LEVEL_MASK;
-  GPoint p = {
-    .x = rect.size.w + MARGIN,
-    .y = ((rect.size.h - TN_HEIGHT) >> 1) + 1
-  };
-  if (num < 100) {
-    graphics_draw_tiny_number(ctx, num / 10, p.x, p.y);
-    p.x += MARGIN + TN_WIDTH;
-    graphics_draw_tiny_number(ctx, num, p.x, p.y);
-  } else if (num == 100){
-    graphics_draw_tiny_string(ctx, FULL_LEVEL, p.x, p.y, MARGIN);
-  } else if (num == LEVEL_UNKNOWN){
-    graphics_draw_tiny_string(ctx, UNKNOW_LEVEL, p.x, p.y, MARGIN);
-  }
+  graphics_draw_bitmap_in_rect(ctx, s_bitmap_bluetooth, rect);
   
-  if (num != BATTERY_API_UNSUPPORTED) {
-    // draw bluetooth mark
-    GBitmap* bmp = (s_charge_state & CHARGING_MASK) ? s_bitmap_bluetooth_charging : s_bitmap_bluetooth;
-    graphics_draw_bitmap_in_rect(ctx, bmp, rect);
-  }
+  // draw yes/no
+  GBitmap* bmp = s_bt_on ? s_bitmap_yes : s_bitmap_no;
+  GRect rect_yn = gbitmap_get_bounds(bmp);
+  rect_yn.origin.x = rect.origin.x + rect.size.w + MARGIN;
+  rect_yn.origin.y = rect.origin.y + ((rect.size.h - rect_yn.size.h) >> 1);
+  graphics_draw_bitmap_in_rect(ctx, bmp, rect_yn);
 }
 
 void bluetooth_layer_create() {
   if (!s_bitmap_bluetooth) {
-    s_bitmap_bluetooth = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_PHONE_BATTERY);
-    s_bitmap_bluetooth_charging = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_PHONE_BATTERY_CHARGING);
+    s_bitmap_bluetooth = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BLUETOOTH_MARK);
+    s_bitmap_yes_no = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_YES_NO);
+    GRect rect = gbitmap_get_bounds(s_bitmap_yes_no);
+    rect.size.w >>= 1;
+    s_bitmap_yes = gbitmap_create_as_sub_bitmap(s_bitmap_yes_no, rect);
+    rect.origin.x += rect.size.w;
+    s_bitmap_no = gbitmap_create_as_sub_bitmap(s_bitmap_yes_no, rect);
   }
   
   if (!s_layer) {
     GRect rect = gbitmap_get_bounds(s_bitmap_bluetooth);
-    rect.size.w += (MARGIN + TN_WIDTH) << 1;
+    GRect rect_yn = gbitmap_get_bounds(s_bitmap_yes);
+    rect.size.w += MARGIN + rect_yn.size.w;
     rect.origin.x = SX + CW * DW + SPACING_X;
     rect.origin.y = SY + CH * WN + SPACING_Y;
     s_layer = layer_create(rect);
@@ -69,8 +61,9 @@ void bluetooth_layer_create() {
 
 void bluetooth_layer_destroy() {
   if (s_bitmap_bluetooth) {
-    gbitmap_destroy(s_bitmap_bluetooth_charging);
-    s_bitmap_bluetooth_charging = NULL;
+    gbitmap_destroy(s_bitmap_yes);
+    gbitmap_destroy(s_bitmap_no);
+    gbitmap_destroy(s_bitmap_yes_no);
     gbitmap_destroy(s_bitmap_bluetooth);
     s_bitmap_bluetooth = NULL;
   }
@@ -85,6 +78,6 @@ Layer* bluetooth_layer_get_layer() {
   return s_layer;
 }
 
-void bluetooth_layer_update(uint8_t state) {
-  s_charge_state = state;
+void bluetooth_layer_update(bool is_bt_on) {
+  s_bt_on = is_bt_on;
 }

@@ -8,6 +8,7 @@
 #include "sec_layer.h"
 #include "watch_battery_layer.h"
 #include "phone_battery_layer.h"
+#include "bluetooth_layer.h"
 
 #define KEY_PHONE_BATTERY    8
 
@@ -19,9 +20,12 @@ static Layer* s_calendar_layer;
 static Layer* s_sec_layer;
 static Layer* s_watch_battery_layer;
 static Layer* s_phone_battery_layer;
+static Layer* s_bluetooth_layer;
 
 static time_t s_now_t;
 static struct tm s_now_tm;
+
+static bool s_battery_api_supported = true;
 
 static void init();
 static void deinit();
@@ -35,6 +39,8 @@ static void init_sync();
 static void deinit_sync();
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context);
 static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context);
+
+static void bt_handler(bool connected);
 
 static void init() {
   // init numbers
@@ -58,6 +64,9 @@ static void init() {
   
   // register the battery service
   battery_state_service_subscribe(battery_handler);
+  
+  // register the bluetooth service
+  bluetooth_connection_service_subscribe(bt_handler);
   
   // init AppSync
   init_sync();
@@ -90,11 +99,17 @@ static void main_window_load(Window* window) {
   phone_battery_layer_create();
   s_phone_battery_layer = phone_battery_layer_get_layer();
   layer_add_child(window_get_root_layer(s_main_window), s_phone_battery_layer);
+  // create bluetooth layer
+  bluetooth_layer_create();
+  s_bluetooth_layer = bluetooth_layer_get_layer();
+  layer_add_child(window_get_root_layer(s_main_window), s_bluetooth_layer);
   
   // display time from the beginning
   update_time(true);
   // display battery status from the beginning
   battery_handler(battery_state_service_peek());
+  // display bluetooth status from the beginning
+  bt_handler(bluetooth_connection_service_peek());
 }
 
 static void main_window_unload(Window* window) {
@@ -106,6 +121,8 @@ static void main_window_unload(Window* window) {
   watch_battery_layer_destroy();
   // destroy phone battery layer
   phone_battery_layer_destroy();
+  // destroy bluetooth layer
+  bluetooth_layer_destroy();
 }
 
 static void tick_handler(struct tm* tick_time, TimeUnits units_changed) {
@@ -116,8 +133,8 @@ static void update_time(bool is_init) {
   time(&s_now_t);
   struct tm* st = localtime(&s_now_t);
   memcpy(&s_now_tm, st, sizeof(s_now_tm));
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d",
-          s_now_tm.tm_year + 1900, s_now_tm.tm_mon + 1, s_now_tm.tm_mday, s_now_tm.tm_hour, s_now_tm.tm_min, s_now_tm.tm_sec);
+//  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d",
+//          s_now_tm.tm_year + 1900, s_now_tm.tm_mon + 1, s_now_tm.tm_mday, s_now_tm.tm_hour, s_now_tm.tm_min, s_now_tm.tm_sec);
   
   sec_layer_update_time(&s_now_t, &s_now_tm);
   layer_mark_dirty(s_sec_layer);
@@ -159,7 +176,8 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
     {
       uint8_t state = (uint8_t) new_tuple->value->int32;
       APP_LOG(APP_LOG_LEVEL_DEBUG, "get battery state: %d, %d", (uint8_t)new_tuple->value->int32 & CHARGING_MASK, (uint8_t)new_tuple->value->int32 & LEVEL_MASK);
-      if (state == BATTERY_API_UNSUPPORTED) {
+      if (state == BATTERY_API_UNSUPPORTED || !s_battery_api_supported) {
+        s_battery_api_supported = false;
         layer_set_hidden(s_phone_battery_layer, true);
       } else {
         layer_set_hidden(s_phone_battery_layer, false);
@@ -176,6 +194,26 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
 
 static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "phone battery info sync error!");
+}
+
+static void bt_handler(bool connected) {
+  bool need_bt_layer = true;
+  if (connected) {
+    if (s_battery_api_supported) {
+      layer_set_hidden(s_phone_battery_layer, false);
+      need_bt_layer = false;
+    }
+  }
+  
+  if (need_bt_layer) {
+    layer_set_hidden(s_bluetooth_layer, false);
+    bluetooth_layer_update(connected);
+    layer_mark_dirty(s_bluetooth_layer);
+    layer_set_hidden(s_phone_battery_layer, true);
+  } else {
+    layer_set_hidden(s_bluetooth_layer, true);
+    layer_set_hidden(s_phone_battery_layer, false);
+  }
 }
 
 int main(void) {
