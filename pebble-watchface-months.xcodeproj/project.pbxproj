@@ -13,6 +13,7 @@
 		B642DA751B42D0BE0068CFF0 /* letters.c in Sources */ = {isa = PBXBuildFile; fileRef = B642DA731B42D0BE0068CFF0 /* letters.c */; };
 		B642DA781B44194A0068CFF0 /* watch_battery_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = B642DA761B44194A0068CFF0 /* watch_battery_layer.c */; };
 		B642DA7E1B4579890068CFF0 /* phone_battery_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = B642DA7C1B4579890068CFF0 /* phone_battery_layer.c */; };
+		B6D378061B4965E5008BFCC7 /* bluetooth_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = B6D378041B4965E5008BFCC7 /* bluetooth_layer.c */; };
 		B7D97EB74DAE4D789BC05E90 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C15B2356C4B6443CB3DCB1CA /* Foundation.framework */; };
 		D227DC46503942A88CD61B02 /* calendar_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = AF2DA1120D224F95B6C3796F /* calendar_layer.c */; };
 /* End PBXBuildFile section */
@@ -32,6 +33,8 @@
 		B642DA7C1B4579890068CFF0 /* phone_battery_layer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = phone_battery_layer.c; sourceTree = "<group>"; };
 		B642DA7D1B4579890068CFF0 /* phone_battery_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = phone_battery_layer.h; sourceTree = "<group>"; };
 		B64AF5221B46CECC0036EE55 /* pebble-js-app.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "pebble-js-app.js"; path = "js/pebble-js-app.js"; sourceTree = "<group>"; };
+		B6D378041B4965E5008BFCC7 /* bluetooth_layer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bluetooth_layer.c; sourceTree = "<group>"; };
+		B6D378051B4965E5008BFCC7 /* bluetooth_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bluetooth_layer.h; sourceTree = "<group>"; };
 		C15B2356C4B6443CB3DCB1CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		C4135A2D4BE941D28853F631 /* numbers.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = numbers.c; sourceTree = "<group>"; };
 		C5F0A33E89C14546BD10AD6A /* fake-iOS-target.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "fake-iOS-target.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,6 +67,8 @@
 			isa = PBXGroup;
 			children = (
 				B64AF5211B46CE5F0036EE55 /* js */,
+				B6D378041B4965E5008BFCC7 /* bluetooth_layer.c */,
+				B6D378051B4965E5008BFCC7 /* bluetooth_layer.h */,
 				CF393C8DB1594A948C497892 /* const.h */,
 				AF2DA1120D224F95B6C3796F /* calendar_layer.c */,
 				8D5B038EA2994DA999DAE93B /* calendar_layer.h */,
@@ -178,6 +183,7 @@
 				7AECDC7025604471BEC42D11 /* main.c in Sources */,
 				B642DA751B42D0BE0068CFF0 /* letters.c in Sources */,
 				B642DA781B44194A0068CFF0 /* watch_battery_layer.c in Sources */,
+				B6D378061B4965E5008BFCC7 /* bluetooth_layer.c in Sources */,
 				1420B49E7433493C8B6261EA /* numbers.c in Sources */,
 				B62FFBDB1B3EECB200134A08 /* sec_layer.c in Sources */,
 				B642DA7E1B4579890068CFF0 /* phone_battery_layer.c in Sources */,
