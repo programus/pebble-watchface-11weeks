@@ -174,7 +174,9 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
   switch (key) {
     case KEY_PHONE_BATTERY:
     {
-      uint8_t state = (uint8_t) new_tuple->value->int32;
+//      uint8_t state = (uint8_t) new_tuple->value->int32;
+      static uint8_t state = 0;
+      state++;
       APP_LOG(APP_LOG_LEVEL_DEBUG, "get battery state: %d, %d", (uint8_t)new_tuple->value->int32 & CHARGING_MASK, (uint8_t)new_tuple->value->int32 & LEVEL_MASK);
       if (state == BATTERY_API_UNSUPPORTED || !s_battery_api_supported) {
         s_battery_api_supported = false;
