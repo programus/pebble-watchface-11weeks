@@ -155,13 +155,21 @@ static void deinit_sync() {
 
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
   switch (key) {
-  case KEY_PHONE_BATTERY:
-    APP_LOG(APP_LOG_LEVEL_DEBUG, "get battery state: %d, %d", (uint8_t)new_tuple->value->int32 & 0x80, (uint8_t)new_tuple->value->int32 & 0x7f);
-    phone_battery_layer_update((uint8_t) new_tuple->value->int32);
-    layer_mark_dirty(s_phone_battery_layer);
+    case KEY_PHONE_BATTERY:
+    {
+      uint8_t state = (uint8_t) new_tuple->value->int32;
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "get battery state: %d, %d", (uint8_t)new_tuple->value->int32 & CHARGING_MASK, (uint8_t)new_tuple->value->int32 & LEVEL_MASK);
+      if (state == BATTERY_API_UNSUPPORTED) {
+        layer_set_hidden(s_phone_battery_layer, true);
+      } else {
+        layer_set_hidden(s_phone_battery_layer, false);
+        phone_battery_layer_update(state);
+        layer_mark_dirty(s_phone_battery_layer);
+      }
+    }
     break;
     
-  default:
+    default:
     break;
   }
 }
