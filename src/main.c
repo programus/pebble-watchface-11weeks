@@ -25,7 +25,7 @@ static Layer* s_bluetooth_layer;
 static time_t s_now_t;
 static struct tm s_now_tm;
 
-static bool s_battery_api_supported = true;
+static bool s_battery_api_supported = false;
 
 static void init();
 static void deinit();
@@ -39,6 +39,7 @@ static void init_sync();
 static void deinit_sync();
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context);
 static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context);
+static void update_phone_battery(uint8_t state);
 
 static void bt_handler(bool connected);
 
@@ -155,7 +156,7 @@ static void init_sync() {
   
   // setup initial value
   Tuplet initial_values[] = {
-    TupletInteger(KEY_PHONE_BATTERY, LEVEL_UNKNOWN),
+    TupletInteger(KEY_PHONE_BATTERY, BATTERY_API_UNSUPPORTED),
   };
   
   // create buffer
@@ -174,16 +175,7 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
   switch (key) {
     case KEY_PHONE_BATTERY:
     {
-      uint8_t state = (uint8_t) new_tuple->value->int32;
-      APP_LOG(APP_LOG_LEVEL_DEBUG, "get battery state: %d, %d", (uint8_t)new_tuple->value->int32 & CHARGING_MASK, (uint8_t)new_tuple->value->int32 & LEVEL_MASK);
-      if (state == BATTERY_API_UNSUPPORTED || !s_battery_api_supported) {
-        s_battery_api_supported = false;
-        layer_set_hidden(s_phone_battery_layer, true);
-      } else {
-        layer_set_hidden(s_phone_battery_layer, false);
-        phone_battery_layer_update(state);
-        layer_mark_dirty(s_phone_battery_layer);
-      }
+      update_phone_battery(new_tuple->value->int8);
     }
     break;
     
@@ -194,6 +186,17 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
 
 static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app_message_error, void *context) {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "phone battery info sync error!");
+}
+
+static void update_phone_battery(uint8_t state) {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "get battery state: %d, %d", state & CHARGING_MASK, state & LEVEL_MASK);
+  s_battery_api_supported = !(state == BATTERY_API_UNSUPPORTED);
+  layer_set_hidden(s_phone_battery_layer, !s_battery_api_supported);
+  layer_set_hidden(s_bluetooth_layer, s_battery_api_supported);
+  if (s_battery_api_supported) {
+    phone_battery_layer_update(state);
+    layer_mark_dirty(s_phone_battery_layer);
+  }
 }
 
 static void bt_handler(bool connected) {
