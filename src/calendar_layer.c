@@ -45,9 +45,13 @@ static void calendar_layer_draw_mon(GContext* ctx, int tm_mon, int week);
 static void calendar_layer_draw_curr_week_indicator(GContext* ctx, int week, bool is_left_side);
 static void calendar_layer_draw_dates(GContext* ctx);
 static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday, bool is_today);
+
 static void update_bg_buffer(GContext* ctx);
 static void destroy_bg_buffer();
 static uint8_t get_pixel_from_buffer(int x, int y);
+
+static void store_buffer(GContext* ctx);
+static void calendar_layer_draw_buffer(GContext* ctx);
 
 static void update_bg_buffer(GContext* ctx) {
   GBitmap* bmp = graphics_capture_frame_buffer(ctx);
@@ -119,17 +123,35 @@ void calendar_layer_update_time(time_t* time, struct tm* tm) {
 
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
   if (s_now && s_now_t) {
-    // draw time
-    calendar_layer_draw_time(ctx);
-    
-    // draw calendar grids
-    graphics_context_set_compositing_mode(ctx, GCompOpOr);
-    GRect rect = gbitmap_get_bounds(s_bitmap_background);
-    graphics_draw_bitmap_in_rect(ctx, s_bitmap_background, rect);
-    
-    // draw calendar
-    calendar_layer_draw_dates(ctx);
+    if (s_now->tm_sec == 0 || !s_bg_buffer) {
+      // draw time
+      calendar_layer_draw_time(ctx);
+      
+      // draw calendar grids
+      graphics_context_set_compositing_mode(ctx, GCompOpOr);
+      GRect rect = gbitmap_get_bounds(s_bitmap_background);
+      graphics_draw_bitmap_in_rect(ctx, s_bitmap_background, rect);
+      
+      // draw calendar
+      calendar_layer_draw_dates(ctx);
+      
+      // store drawn buffer
+      store_buffer(ctx);
+    } else {
+      calendar_layer_draw_buffer(ctx);
+    }
   }
+}
+
+static void store_buffer(GContext* ctx) {
+  update_bg_buffer(ctx);
+}
+
+static void calendar_layer_draw_buffer(GContext* ctx) {
+  GBitmap* bmp = graphics_capture_frame_buffer(ctx);
+  buffer_t* frame_buffer = gbitmap_get_data(bmp);
+  memcpy(frame_buffer, s_bg_buffer, s_bg_buffer_size * sizeof(buffer_t));
+  graphics_release_frame_buffer(ctx, bmp);
 }
 
 static void calendar_layer_draw_time(GContext* ctx) {
