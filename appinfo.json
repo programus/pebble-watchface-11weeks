@@ -57,6 +57,11 @@
       "file": "images/yes_no.png",
       "name": "IMAGE_YES_NO",
       "type": "png"
+      },
+      {
+      "file": "images/time_scale.png",
+      "name": "IMAGE_TIME_SCALE",
+      "type": "png"
       }
       ]
   },
