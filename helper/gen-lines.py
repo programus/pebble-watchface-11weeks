@@ -46,7 +46,7 @@ def gen_minutes_lines():
   n = 900
   points = get_points(w, h, n)
   lines = get_lines(72, 84, points)
-  print ',\n'.join(lines)
+  print 'TimeFrame min_lines[] = {\n\t%s\n};'% (',\n\t'.join(lines), )
   
   
 def gen_hours_lines():
@@ -55,7 +55,8 @@ def gen_hours_lines():
   n = 12 * 60 / 4
   points = get_points(w, h, n)
   lines = get_lines(72, 84, points)
-  print ',\n'.join(lines)
+  print 'TimeFrame hour_lines[] = {\n\t%s\n};'% (',\n\t'.join(lines), )
+  
 if __name__ == '__main__':
-  # gen_minutes_lines()
+  gen_minutes_lines()
   gen_hours_lines()
