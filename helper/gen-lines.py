@@ -2,7 +2,7 @@ import math
 
 def get_points(w, h, n):
   l = []
-  for s in xrange(n + 1):
+  for s in xrange(n):
     r = math.radians(s * 90. / n)
     t = math.tan(r)
     b = False
@@ -34,7 +34,7 @@ def get_lines(ox, oy, points):
       if p[0] != bool(i & 1):
         n += 1
       
-      s = '%d, %s, 0x%04x' % (n, ', '.join(['0x%04x' % (hex_point(ox + x[0], oy + x[1]), ) for x in hist[0: n - 1]]), hex_point(ox + a * round(p[1]) + (a if a < 0 else 0), oy + b * round(p[2]) + (b if b < 0 else 0)))
+      s = '{%d, (uint16_t[]) {%s, 0x%04x}}' % (n, ', '.join(['0x%04x' % (hex_point(ox + x[0], oy + x[1]), ) for x in hist[0: n - 1]]), hex_point(ox + a * round(p[1]) + (a if a < 0 else 0), oy + b * round(p[2]) + (b if b < 0 else 0)))
       ret.append(s)
     points.reverse()
       
@@ -49,7 +49,7 @@ def gen_minutes_lines():
   n = 900
   points = get_points(w, h, n)
   lines = get_lines(72, 84, points)
-  print 'uint16_t min_lines[] = {\n\t%s\n};'% (',\n\t'.join(lines), )
+  print 'static TimeFrame min_lines[] = {\n\t%s\n};'% (',\n\t'.join(lines), )
   
   
 def gen_hours_lines():
@@ -58,7 +58,7 @@ def gen_hours_lines():
   n = 12 * 60 / 4
   points = get_points(w, h, n)
   lines = get_lines(72, 84, points)
-  print 'uint16_t hour_lines[] = {\n\t%s\n};'% (',\n\t'.join(lines), )
+  print 'static TimeFrame hour_lines[] = {\n\t%s\n};'% (',\n\t'.join(lines), )
   
 if __name__ == '__main__':
   gen_minutes_lines()
