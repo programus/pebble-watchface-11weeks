@@ -6,6 +6,7 @@
 
 #include "calendar_layer.h"
 #include "sec_layer.h"
+#include "frame_layer.h"
 #include "watch_battery_layer.h"
 #include "phone_battery_layer.h"
 #include "bluetooth_layer.h"
@@ -18,6 +19,7 @@ static uint8_t* s_sync_buffer;
 static Window* s_main_window;
 static Layer* s_calendar_layer;
 static Layer* s_sec_layer;
+static Layer* s_frame_layer;
 static Layer* s_watch_battery_layer;
 static Layer* s_phone_battery_layer;
 static Layer* s_bluetooth_layer;
@@ -92,6 +94,10 @@ static void main_window_load(Window* window) {
   sec_layer_create();
   s_sec_layer = sec_layer_get_layer();
   layer_add_child(window_get_root_layer(s_main_window), s_sec_layer);
+  // create frame layer
+  frame_layer_create();
+  s_frame_layer = frame_layer_get_layer();
+  layer_add_child(window_get_root_layer(s_main_window), s_frame_layer);
   // create watch battery layer
   watch_battery_layer_create();
   s_watch_battery_layer = watch_battery_layer_get_layer();
@@ -118,6 +124,8 @@ static void main_window_unload(Window* window) {
   calendar_layer_destroy();
   // destroy sec layer
   sec_layer_destroy();
+  // destroy frame layer
+  frame_layer_destroy();
   // destroy watch battery layer
   watch_battery_layer_destroy();
   // destroy phone battery layer
@@ -139,6 +147,8 @@ static void update_time(bool is_init) {
   
   sec_layer_update_time(&s_now_t, &s_now_tm);
   layer_mark_dirty(s_sec_layer);
+  frame_layer_update_time(&s_now_t, &s_now_tm);
+  layer_mark_dirty(s_frame_layer);
   if (is_init || s_now_tm.tm_sec == 0) {
     calendar_layer_update_time(&s_now_t, &s_now_tm);
     layer_mark_dirty(s_calendar_layer);
