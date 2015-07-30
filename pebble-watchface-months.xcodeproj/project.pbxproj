@@ -36,7 +36,6 @@
 		B64AF5221B46CECC0036EE55 /* pebble-js-app.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = "pebble-js-app.js"; path = "js/pebble-js-app.js"; sourceTree = "<group>"; };
 		B6C96EDD1B6A503100B0A070 /* frame_layer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = frame_layer.c; sourceTree = "<group>"; };
 		B6C96EDE1B6A503100B0A070 /* frame_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = frame_layer.h; sourceTree = "<group>"; };
-		B6C96EE11B6A527B00B0A070 /* frame_lines_data.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = frame_lines_data.h; sourceTree = "<group>"; };
 		B6D378041B4965E5008BFCC7 /* bluetooth_layer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bluetooth_layer.c; sourceTree = "<group>"; };
 		B6D378051B4965E5008BFCC7 /* bluetooth_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = bluetooth_layer.h; sourceTree = "<group>"; };
 		C15B2356C4B6443CB3DCB1CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -71,7 +70,6 @@
 			isa = PBXGroup;
 			children = (
 				B64AF5211B46CE5F0036EE55 /* js */,
-				B6C96EE11B6A527B00B0A070 /* frame_lines_data.h */,
 				B6C96EDD1B6A503100B0A070 /* frame_layer.c */,
 				B6C96EDE1B6A503100B0A070 /* frame_layer.h */,
 				B6D378041B4965E5008BFCC7 /* bluetooth_layer.c */,
