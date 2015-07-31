@@ -10,13 +10,10 @@
 #include "frame_layer.h"
 #include "numbers.h"
 
-#define MIN_H   83
-#define MIN_W   71
-#define HOUR_H  81
-#define HOUR_W  69
-
 #define FRAME_H 82
 #define FRAME_W 70
+
+#define PATH_SZ 2
 
 static const GPathInfo HAND_PATH_INFO = {
   .num_points = 3,
@@ -78,10 +75,11 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
     topleft
   };
   
-  const uint32_t ROTATE_UNIT = TRIG_MAX_ANGLE >> 2;
+  const uint32_t ROTATE_UNIT = TRIG_MAX_ANGLE >> 3;
   
   GPoint p[6];
   int num = 0;
+  int corner = 0;
   
   if (angle == 0) {
     if (is_line) {
@@ -109,10 +107,15 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
 //      APP_LOG(APP_LOG_LEVEL_DEBUG, " ++ %d, %d (%d, %d)", (int)cos, (int)sin, end.x, end.y);
     }
     
+    if (w - end.x < PATH_SZ && h - end.y < PATH_SZ) {
+      corner = 1;
+    }
+    
     int trig_90 = TRIG_MAX_ANGLE >> 2;
     
     if (angle >= 0 && angle < trig_90) {
       if (end.y < h) {
+        corner = -corner;
         num++;
       }
       end.x += center.x;
@@ -120,6 +123,7 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
       num += 1;
     } else if (angle >= trig_90 && angle < (trig_90 << 1)) {
       if (end.x < w) {
+        corner = -corner;
         num++;
       }
       end.x += center.x;
@@ -127,6 +131,7 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
       num += 2;
     } else if (angle >= (trig_90 << 1) && angle < trig_90 * 3) {
       if (end.y < h) {
+        corner = -corner;
         num++;
       }
       end.x = center.x - end.x - 1;
@@ -134,6 +139,7 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
       num += 3;
     } else {
       if (end.x < w) {
+        corner = -corner;
         num++;
       }
       end.x = center.x - end.x - 1;
@@ -154,8 +160,18 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
       graphics_draw_line(ctx, p[i], p[i - 1]);
     }
   } else {
-    gpath_move_to(s_hand_path, p[num - 1]);
-    gpath_rotate_to(s_hand_path, ROTATE_UNIT * ((num - 2) & 0x03));
+    gpath_rotate_to(s_hand_path, ROTATE_UNIT * ((((num - 2) & 0x03) << 1) + corner));
+    switch (corner) {
+      case 1:
+        gpath_move_to(s_hand_path, hist[num - 1]);
+        break;
+      case -1:
+        gpath_move_to(s_hand_path, hist[num - 2]);
+        break;
+      default:
+        gpath_move_to(s_hand_path, p[num - 1]);
+        break;
+    }
     gpath_draw_outline(ctx, s_hand_path);
     gpath_draw_filled(ctx, s_hand_path);
   }
