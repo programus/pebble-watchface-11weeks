@@ -10,7 +10,7 @@
 #include "const.h"
 
 #define MARGIN          1
-#define SPACING_X       3
+#define SPACING_X       1
 #define SPACING_Y       0
 
 static Layer* s_layer = NULL;

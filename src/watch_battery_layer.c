@@ -12,7 +12,7 @@
 #include "letters.h"
 
 #define MARGIN    2
-#define SPACING_X 4
+#define SPACING_X 2
 #define SPACING_Y -1
 
 static Layer* s_layer = NULL;

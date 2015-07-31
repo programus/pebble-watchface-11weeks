@@ -12,7 +12,7 @@
 #include "letters.h"
 
 #define MARGIN          1
-#define SPACING_X       3
+#define SPACING_X       1
 #define SPACING_Y       -1
 
 #define UNKNOW_LEVEL    "XX"
@@ -31,7 +31,8 @@ static void update_proc(Layer* layer, GContext* ctx) {
   // get number
   int num = s_charge_state & LEVEL_MASK;
   GPoint p = {
-    .x = rect.size.w + MARGIN,
+//    .x = rect.size.w + MARGIN,
+    .x = 0,
     .y = ((rect.size.h - TN_HEIGHT) >> 1) + 1
   };
   if (num < 100) {
@@ -47,6 +48,7 @@ static void update_proc(Layer* layer, GContext* ctx) {
   if (num != BATTERY_API_UNSUPPORTED) {
     // draw battery mark
     GBitmap* bmp = (s_charge_state & CHARGING_MASK) ? s_bitmap_battery_charging : s_bitmap_battery;
+    rect.origin.x = p.x + MARGIN + TN_WIDTH;
     graphics_draw_bitmap_in_rect(ctx, bmp, rect);
   }
 }

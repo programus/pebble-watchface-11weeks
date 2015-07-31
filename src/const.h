@@ -4,7 +4,7 @@
 #define SCREEN_HEIGHT 168
 
 #define SX        23    // start point x
-#define SY        19    // start point y
+#define SY        18    // start point y
 #define DX        3     // margin x
 #define DY        3     // margin y
 #define CW        14    // cell width
