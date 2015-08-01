@@ -41,8 +41,10 @@ static void update_proc(Layer* layer, GContext* ctx) {
     graphics_draw_tiny_number(ctx, num, p.x, p.y);
   } else if (num == 100){
     graphics_draw_tiny_string(ctx, FULL_LEVEL, p.x, p.y, MARGIN);
+    p.x += MARGIN + TN_WIDTH;
   } else if (num == LEVEL_UNKNOWN){
     graphics_draw_tiny_string(ctx, UNKNOW_LEVEL, p.x, p.y, MARGIN);
+    p.x += MARGIN + TN_WIDTH;
   }
   
   if (num != BATTERY_API_UNSUPPORTED) {
