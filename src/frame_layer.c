@@ -15,7 +15,7 @@
 
 #define PATH_SZ 2
 
-#define BLINK_DELAY 400
+#define BLINK_DELAY 650
 
 static const GPathInfo HAND_PATH_INFO = {
   .num_points = 3,
@@ -184,6 +184,8 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
           break;
       }
       app_timer_register(BLINK_DELAY, blink_hand_pointer, NULL);
+      gpath_draw_outline(ctx, s_hand_path);
+      gpath_draw_filled(ctx, s_hand_path);
     }
   } else {
     if (is_line) {
@@ -193,8 +195,7 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
         graphics_draw_line(ctx, p[i], p[i - 1]);
       }
     } else {
-      gpath_draw_outline(ctx, s_hand_path);
-      gpath_draw_filled(ctx, s_hand_path);
+      // do nothing to remove pointer.
     }
   }
 }
