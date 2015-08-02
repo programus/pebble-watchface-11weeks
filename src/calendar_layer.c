@@ -37,6 +37,8 @@ static int s_bg_row_size_byte;
 static time_t* s_now_t = NULL;
 // variable to store current time in struct tm
 static struct tm* s_now = NULL;
+// variable to cache the time
+static struct tm s_prev = {0};
 
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx);
 static void calendar_layer_draw_time(GContext* ctx);
@@ -123,7 +125,7 @@ void calendar_layer_update_time(time_t* time, struct tm* tm) {
 
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
   if (s_now && s_now_t) {
-    if (s_now->tm_sec == 0 || !s_bg_buffer) {
+    if (s_prev.tm_hour != s_now->tm_hour || s_prev.tm_min != s_now->tm_min || !s_bg_buffer) {
       // draw time
       calendar_layer_draw_time(ctx);
       
@@ -140,6 +142,8 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
     } else {
       calendar_layer_draw_buffer(ctx);
     }
+    
+    memcpy(&s_prev, s_now, sizeof(struct tm));
   }
 }
 
