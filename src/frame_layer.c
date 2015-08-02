@@ -15,7 +15,7 @@
 
 #define PATH_SZ 2
 
-#define BLINK_DELAY 500
+#define BLINK_DELAY 400
 
 static const GPathInfo HAND_PATH_INFO = {
   .num_points = 3,
