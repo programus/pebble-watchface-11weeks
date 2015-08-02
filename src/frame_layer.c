@@ -15,6 +15,8 @@
 
 #define PATH_SZ 2
 
+#define BLINK_DELAY 500
+
 static const GPathInfo HAND_PATH_INFO = {
   .num_points = 3,
   .points = (GPoint[]) {
@@ -26,6 +28,7 @@ static const GPathInfo HAND_PATH_INFO = {
 static GPath* s_hand_path;
 
 static struct tm* s_now = NULL;
+static struct tm  s_prev = {0};
 
 static Layer* s_frame_layer;
 
@@ -33,6 +36,7 @@ static void update_proc(Layer* layer, GContext* ctx);
 static void draw_hour_line(GContext* ctx);
 static void draw_min_line(GContext* ctx);
 static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line);
+static void blink_hand_pointer(void* data);
 
 void frame_layer_update_time(time_t* time, struct tm* tm) {
   s_now = tm;
@@ -48,6 +52,10 @@ static void update_proc(Layer* layer, GContext* ctx) {
     draw_min_line(ctx);
 //    APP_LOG(APP_LOG_LEVEL_DEBUG, "hours...");
     draw_hour_line(ctx);
+    
+    if (memcmp(s_now, &s_prev, sizeof(struct tm))) {
+      memcpy(&s_prev, s_now, sizeof(struct tm));
+    }
   }
 }
 
@@ -77,104 +85,122 @@ static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line) {
   
   const uint32_t ROTATE_UNIT = TRIG_MAX_ANGLE >> 3;
   
-  GPoint p[6];
-  int num = 0;
-  int corner = 0;
+  static GPoint p[6];
+  static int num = 0;
+  static int corner = 0;
   
-  if (angle == 0) {
-    if (is_line) {
-      return;
+  if (memcmp(s_now, &s_prev, sizeof(struct tm))) {
+    num = 0;
+    corner = 0;
+    if (angle == 0) {
+      if (is_line) {
+        return;
+      } else {
+        p[0].x = center.x;
+        p[0].y = topleft.y;
+        num++;
+      }
+    } else if (angle == TRIG_MAX_ANGLE >> 1) {
+      memcpy(p, hist, 3 * sizeof(GPoint));
+      p[3].x = SCREEN_WIDTH >> 1;
+      p[3].y = rightbottom.y;
+      num = 4;
     } else {
-      p[0].x = center.x;
-      p[0].y = topleft.y;
-      num++;
-    }
-  } else if (angle == TRIG_MAX_ANGLE >> 1) {
-    memcpy(p, hist, 3 * sizeof(GPoint));
-    p[3].x = SCREEN_WIDTH >> 1;
-    p[3].y = rightbottom.y;
-    num = 4;
-  } else {
-    int32_t cos = abs(cos_lookup(angle));
-    int32_t sin = abs(sin_lookup(angle));
-    GPoint end = GPoint(0, 0);
-    end.y = h;
-    end.x = end.y * sin / cos;
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, " -- %d, %d (%d, %d)", (int)cos, (int)sin, end.x, end.y);
-    if (end.x > w) {
-      end.x = w;
-      end.y = cos * end.x / sin;
-//      APP_LOG(APP_LOG_LEVEL_DEBUG, " ++ %d, %d (%d, %d)", (int)cos, (int)sin, end.x, end.y);
-    }
-    
-    if (w - end.x < PATH_SZ && h - end.y < PATH_SZ) {
-      corner = 1;
-    }
-    
-    int trig_90 = TRIG_MAX_ANGLE >> 2;
-    
-    if (angle >= 0 && angle < trig_90) {
-      if (end.y < h) {
-        corner = -corner;
-        num++;
+      int32_t cos = abs(cos_lookup(angle));
+      int32_t sin = abs(sin_lookup(angle));
+      GPoint end = GPoint(0, 0);
+      end.y = h;
+      end.x = end.y * sin / cos;
+  //    APP_LOG(APP_LOG_LEVEL_DEBUG, " -- %d, %d (%d, %d)", (int)cos, (int)sin, end.x, end.y);
+      if (end.x > w) {
+        end.x = w;
+        end.y = cos * end.x / sin;
+  //      APP_LOG(APP_LOG_LEVEL_DEBUG, " ++ %d, %d (%d, %d)", (int)cos, (int)sin, end.x, end.y);
       }
-      end.x += center.x;
-      end.y =center.y - end.y - 1;
-      num += 1;
-    } else if (angle >= trig_90 && angle < (trig_90 << 1)) {
-      if (end.x < w) {
-        corner = -corner;
-        num++;
+      
+      if (w - end.x < PATH_SZ && h - end.y < PATH_SZ) {
+        corner = 1;
       }
-      end.x += center.x;
-      end.y += center.y;
-      num += 2;
-    } else if (angle >= (trig_90 << 1) && angle < trig_90 * 3) {
-      if (end.y < h) {
-        corner = -corner;
-        num++;
+      
+      int trig_90 = TRIG_MAX_ANGLE >> 2;
+      
+      if (angle >= 0 && angle < trig_90) {
+        if (end.y < h) {
+          corner = -corner;
+          num++;
+        }
+        end.x += center.x;
+        end.y =center.y - end.y - 1;
+        num += 1;
+      } else if (angle >= trig_90 && angle < (trig_90 << 1)) {
+        if (end.x < w) {
+          corner = -corner;
+          num++;
+        }
+        end.x += center.x;
+        end.y += center.y;
+        num += 2;
+      } else if (angle >= (trig_90 << 1) && angle < trig_90 * 3) {
+        if (end.y < h) {
+          corner = -corner;
+          num++;
+        }
+        end.x = center.x - end.x - 1;
+        end.y += center.y;
+        num += 3;
+      } else {
+        if (end.x < w) {
+          corner = -corner;
+          num++;
+        }
+        end.x = center.x - end.x - 1;
+        end.y = center.y - end.y - 1;
+        num += 4;
       }
-      end.x = center.x - end.x - 1;
-      end.y += center.y;
-      num += 3;
-    } else {
-      if (end.x < w) {
-        corner = -corner;
-        num++;
+      
+      if (is_line) {
+        memcpy(p, hist, num * sizeof(GPoint));
       }
-      end.x = center.x - end.x - 1;
-      end.y = center.y - end.y - 1;
-      num += 4;
+      p[num++] = end;
     }
     
     if (is_line) {
-      memcpy(p, hist, num * sizeof(GPoint));
-    }
-    p[num++] = end;
-  }
-  
-  if (is_line) {
-//    APP_LOG(APP_LOG_LEVEL_DEBUG, "num: %d, angle: %d/ %d", num, angle, angle * 360 / TRIG_MAX_ANGLE);
-    for (int i = 1; i < num; i++) {
-//      APP_LOG(APP_LOG_LEVEL_DEBUG, "(%d, %d) -> (%d, %d)", p[i].x, p[i].y, p[i + 1].x, p[i + 1].y);
-      graphics_draw_line(ctx, p[i], p[i - 1]);
+  //    APP_LOG(APP_LOG_LEVEL_DEBUG, "num: %d, angle: %d/ %d", num, angle, angle * 360 / TRIG_MAX_ANGLE);
+      for (int i = 1; i < num; i++) {
+  //      APP_LOG(APP_LOG_LEVEL_DEBUG, "(%d, %d) -> (%d, %d)", p[i].x, p[i].y, p[i + 1].x, p[i + 1].y);
+        graphics_draw_line(ctx, p[i], p[i - 1]);
+      }
+    } else {
+      gpath_rotate_to(s_hand_path, ROTATE_UNIT * ((((num - 2) & 0x03) << 1) + corner));
+      switch (corner) {
+        case 1:
+          gpath_move_to(s_hand_path, hist[num - 1]);
+          break;
+        case -1:
+          gpath_move_to(s_hand_path, hist[num - 2]);
+          break;
+        default:
+          gpath_move_to(s_hand_path, p[num - 1]);
+          break;
+      }
+      app_timer_register(BLINK_DELAY, blink_hand_pointer, NULL);
     }
   } else {
-    gpath_rotate_to(s_hand_path, ROTATE_UNIT * ((((num - 2) & 0x03) << 1) + corner));
-    switch (corner) {
-      case 1:
-        gpath_move_to(s_hand_path, hist[num - 1]);
-        break;
-      case -1:
-        gpath_move_to(s_hand_path, hist[num - 2]);
-        break;
-      default:
-        gpath_move_to(s_hand_path, p[num - 1]);
-        break;
+    if (is_line) {
+  //    APP_LOG(APP_LOG_LEVEL_DEBUG, "num: %d, angle: %d/ %d", num, angle, angle * 360 / TRIG_MAX_ANGLE);
+      for (int i = 1; i < num; i++) {
+  //      APP_LOG(APP_LOG_LEVEL_DEBUG, "(%d, %d) -> (%d, %d)", p[i].x, p[i].y, p[i + 1].x, p[i + 1].y);
+        graphics_draw_line(ctx, p[i], p[i - 1]);
+      }
+    } else {
+      gpath_draw_outline(ctx, s_hand_path);
+      gpath_draw_filled(ctx, s_hand_path);
     }
-    gpath_draw_outline(ctx, s_hand_path);
-    gpath_draw_filled(ctx, s_hand_path);
   }
+}
+
+static void blink_hand_pointer(void* data) {
+  layer_mark_dirty(s_frame_layer);
 }
 
 void frame_layer_create() {
