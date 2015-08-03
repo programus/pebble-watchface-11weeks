@@ -125,7 +125,7 @@ void calendar_layer_update_time(time_t* time, struct tm* tm) {
 
 static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
   if (s_now && s_now_t) {
-    if (s_prev.tm_hour != s_now->tm_hour || s_prev.tm_min != s_now->tm_min || !s_bg_buffer) {
+    if (!s_bg_buffer || s_prev.tm_min != s_now->tm_min || s_prev.tm_hour != s_now->tm_hour || s_prev.tm_yday != s_now->tm_yday || s_prev.tm_year != s_now->tm_year) {
       // draw time
       calendar_layer_draw_time(ctx);
       
