@@ -25,6 +25,113 @@ static const GPathInfo HAND_PATH_INFO = {
     {2, 4}
   }
 };
+static const GPoint* const SCALE_POINTS = (GPoint[]) {
+  {11, 0},
+  {23, 0},
+  {24, 0},
+  {34, 0},
+  {44, 0},
+  {53, 0},
+  {62, 0},
+  {71, 0},
+  {72, 0},
+  {81, 0},
+  {90, 0},
+  {99, 0},
+  {109, 0},
+  {119, 0},
+  {120, 0},
+  {132, 0},
+  {24, 1},
+  {71, 1},
+  {72, 1},
+  {119, 1},
+  {24, 2},
+  {71, 2},
+  {72, 2},
+  {119, 2},
+  {0, 4},
+  {143, 4},
+  {0, 19},
+  {143, 19},
+  {0, 31},
+  {143, 31},
+  {0, 42},
+  {143, 42},
+  {0, 43},
+  {1, 43},
+  {2, 43},
+  {141, 43},
+  {142, 43},
+  {143, 43},
+  {0, 51},
+  {143, 51},
+  {0, 60},
+  {143, 60},
+  {0, 68},
+  {143, 68},
+  {0, 76},
+  {143, 76},
+  {0, 83},
+  {1, 83},
+  {2, 83},
+  {141, 83},
+  {142, 83},
+  {143, 83},
+  {0, 84},
+  {1, 84},
+  {2, 84},
+  {141, 84},
+  {142, 84},
+  {143, 84},
+  {0, 91},
+  {143, 91},
+  {0, 99},
+  {143, 99},
+  {0, 107},
+  {143, 107},
+  {0, 116},
+  {143, 116},
+  {0, 124},
+  {1, 124},
+  {2, 124},
+  {141, 124},
+  {142, 124},
+  {143, 124},
+  {0, 125},
+  {143, 125},
+  {0, 136},
+  {143, 136},
+  {0, 148},
+  {143, 148},
+  {0, 163},
+  {143, 163},
+  {24, 165},
+  {71, 165},
+  {72, 165},
+  {119, 165},
+  {24, 166},
+  {71, 166},
+  {72, 166},
+  {119, 166},
+  {11, 167},
+  {23, 167},
+  {24, 167},
+  {34, 167},
+  {44, 167},
+  {53, 167},
+  {62, 167},
+  {71, 167},
+  {72, 167},
+  {81, 167},
+  {90, 167},
+  {99, 167},
+  {109, 167},
+  {119, 167},
+  {120, 167},
+  {132, 167}
+};
+static const int SCALE_POINTS_NUM = 104;
 static GPath* s_hand_path;
 
 static struct tm* s_now = NULL;
@@ -33,6 +140,7 @@ static struct tm  s_prev = {0};
 static Layer* s_frame_layer;
 
 static void update_proc(Layer* layer, GContext* ctx);
+static void draw_scales(GContext* ctx);
 static void draw_hour_line(GContext* ctx);
 static void draw_min_line(GContext* ctx);
 static void draw_line(GContext* ctx, int angle, int w, int h, bool is_line);
@@ -44,10 +152,11 @@ void frame_layer_update_time(time_t* time, struct tm* tm) {
 
 static void update_proc(Layer* layer, GContext* ctx) {
   if (s_now) {
-    graphics_context_set_compositing_mode(ctx, GCompOpAnd);
+    graphics_context_set_compositing_mode(ctx, GCompOpOr);
     graphics_context_set_stroke_color(ctx, GColorWhite);
     graphics_context_set_fill_color(ctx, GColorWhite);
     
+    draw_scales(ctx);
 //    APP_LOG(APP_LOG_LEVEL_DEBUG, "minutes...");
     draw_min_line(ctx);
 //    APP_LOG(APP_LOG_LEVEL_DEBUG, "hours...");
@@ -56,6 +165,12 @@ static void update_proc(Layer* layer, GContext* ctx) {
     if (memcmp(s_now, &s_prev, sizeof(struct tm))) {
       memcpy(&s_prev, s_now, sizeof(struct tm));
     }
+  }
+}
+
+static void draw_scales(GContext* ctx) {
+  for (int i = 0; i < SCALE_POINTS_NUM; i++) {
+    graphics_draw_pixel(ctx, SCALE_POINTS[i]);
   }
 }
 
