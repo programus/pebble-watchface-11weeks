@@ -6,7 +6,7 @@
         ""
     ],
     "companyName": "programus@gmail.com",
-    "longName": "Months Calendar Watchface",
+    "longName": "11 Weeks Watchface",
     "projectType": "native",
     "resources": {
         "media": [
@@ -63,10 +63,9 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "Months",
+    "shortName": "11w",
     "targetPlatforms": [
-        "aplite",
-        "basalt"
+        "aplite"
     ],
     "uuid": "5d124af2-30f2-44b2-a32d-b459a159b489",
     "versionLabel": "1.0",
