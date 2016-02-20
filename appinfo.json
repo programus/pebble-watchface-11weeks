@@ -53,7 +53,7 @@
             {
                 "file": "images/number_3x5.png",
                 "name": "IMAGE_NUMBER_3X5",
-                "type": "pbi"
+                "type": "bitmap"
             },
             {
                 "file": "images/cap_letters.png",
