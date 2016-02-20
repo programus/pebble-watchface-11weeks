@@ -12,4 +12,7 @@
 void numbers_create();
 void numbers_destroy();
 void graphics_draw_tiny_number(GContext* ctx, int number, int x, int y);
+#if defined(PBL_COLOR)
+void graphics_draw_tiny_number_rc(GContext* ctx, int number, int x, int y);
+#endif
 void graphics_draw_big_number(GContext* ctx, int number, int x, int y);
