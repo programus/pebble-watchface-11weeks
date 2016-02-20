@@ -130,11 +130,7 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
       calendar_layer_draw_time(ctx);
       
       // draw calendar grids
-#if defined(PBL_BW)
       graphics_context_set_compositing_mode(ctx, GCompOpSet);
-#elif defined(PBL_COLOR)
-      graphics_context_set_compositing_mode(ctx, GCompOpSet);
-#endif
       GRect rect = gbitmap_get_bounds(s_bitmap_background);
       graphics_draw_bitmap_in_rect(ctx, s_bitmap_background, rect);
       
