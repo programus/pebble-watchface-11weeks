@@ -267,10 +267,10 @@ static void calendar_layer_draw_date(GContext* ctx, int wday, int week, int mday
   }
   graphics_draw_tiny_number(ctx, mday % 10, start_point.x + 4, start_point.y);
 #elif defined(PBL_COLOR)
-  bool is_black_bg = get_pixel_from_buffer(start_point.x - DX + 1, start_point.y - DY + 1) != GColorBlackARGB8;
+  bool is_black_bg = get_pixel_from_buffer(start_point.x - DX + 1, start_point.y - DY + 1) == GColorBlackARGB8;
   graphics_context_set_compositing_mode(ctx, GCompOpAssign);
   void (*draw_number)(GContext*, int, int ,int);
-  draw_number = is_black_bg ? &graphics_draw_tiny_number_rc : &graphics_draw_tiny_number;
+  draw_number = is_black_bg ? &graphics_draw_tiny_number : &graphics_draw_tiny_number_rc;
   if (mday > 9) {
     (*draw_number)(ctx, mday / 10, start_point.x, start_point.y);
   }
