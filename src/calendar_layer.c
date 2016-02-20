@@ -131,7 +131,7 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
       
       // draw calendar grids
 #if defined(PBL_BW)
-      graphics_context_set_compositing_mode(ctx, GCompOpOr);
+      graphics_context_set_compositing_mode(ctx, GCompOpSet);
 #elif defined(PBL_COLOR)
       graphics_context_set_compositing_mode(ctx, GCompOpSet);
 #endif
