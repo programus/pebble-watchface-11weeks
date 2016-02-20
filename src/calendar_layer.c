@@ -62,9 +62,9 @@ static void update_bg_buffer(GContext* ctx) {
   
   buffer_t* frame_buffer = gbitmap_get_data(bmp);
   s_bg_row_size_byte = gbitmap_get_bytes_per_row(bmp);
-#ifdef PBL_BW
+#if defined(PBL_BW)
   size_t size = s_bg_row_size_byte * bounds.size.h;
-#elif PBL_COLOR
+#elif defined(PBL_COLOR)
   size_t size = bounds.size.w * bounds.size.h;
 #endif
   if (!s_bg_buffer) {
@@ -107,12 +107,12 @@ static void destroy_bg_buffer() {
 }
 
 static uint8_t get_pixel_from_buffer(int x, int y) {
-#ifdef PBL_BW
+#if defined(PBL_BW)
   int index = y * (s_bg_row_size_byte) + (x >> 3);
   buffer_t shift = x & 0x07;
   buffer_t mask = 1 << shift;
   return (s_bg_buffer[index] & mask) ? 1 : 0;
-#elif PBL_COLOR
+#elif defined(PBL_COLOR)
   int index = y * s_bg_size.w + x;
   return s_bg_buffer[index];
 #endif
@@ -130,7 +130,11 @@ static void calendar_layer_update_proc(Layer* layer, GContext* ctx) {
       calendar_layer_draw_time(ctx);
       
       // draw calendar grids
+#if defined(PBL_BW)
       graphics_context_set_compositing_mode(ctx, GCompOpOr);
+#elif defined(PBL_COLOR)
+      graphics_context_set_compositing_mode(ctx, GCompOpSet);
+#endif
       GRect rect = gbitmap_get_bounds(s_bitmap_background);
       graphics_draw_bitmap_in_rect(ctx, s_bitmap_background, rect);
       
