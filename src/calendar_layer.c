@@ -187,9 +187,14 @@ static void calendar_layer_draw_dates(GContext* ctx) {
   // at least 1 previous weeks
   time_t t = *s_now_t - 604800;        // 3600 * 24 * 7
   struct tm* st = localtime(&t);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "1 week before:  %04d-%02d-%02d %02d:%02d:%02d w=%d yd=%d gmtoff=%d", st->tm_year, st->tm_mon, st->tm_mday, st->tm_hour, st->tm_min, st->tm_sec, st->tm_wday, st->tm_yday, st->tm_gmtoff);
   // get the 1st week of this calendar.
   for (st->tm_mday -= st->tm_wday; st->tm_mday > 1; st->tm_mday -= 7);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "1st day of cal: %04d-%02d-%02d %02d:%02d:%02d w=%d yd=%d gmtoff=%d (before mk)", st->tm_year, st->tm_mon, st->tm_mday, st->tm_hour, st->tm_min, st->tm_sec, st->tm_wday, st->tm_yday, st->tm_gmtoff);
+  // remove timezone information to make mktime work with local time well.
+  st->tm_gmtoff = 0;
   mktime(st);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "1st day of cal: %04d-%02d-%02d %02d:%02d:%02d w=%d yd=%d gmtoff=%d", st->tm_year, st->tm_mon, st->tm_mday, st->tm_hour, st->tm_min, st->tm_sec, st->tm_wday, st->tm_yday, st->tm_gmtoff);
   
   for (int week = 0; week < WN; week++) {
     bool include_today = false;
