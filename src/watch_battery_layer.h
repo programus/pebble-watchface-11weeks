@@ -9,7 +9,7 @@
 #ifndef __pebble_watchface_months__watch_battery_layer__
 #define __pebble_watchface_months__watch_battery_layer__
 
-#include <pebble.h>
+#include "necessary.h"
 
 void watch_battery_layer_create();
 void watch_battery_layer_destroy();

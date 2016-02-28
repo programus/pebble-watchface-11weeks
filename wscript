@@ -17,6 +17,7 @@ out = 'build'
 
 def options(ctx):
     ctx.load('pebble_sdk')
+    ctx.add_option('--no-log', action='store_true', default=False, help='Set NOLOG macro.')
 
 def configure(ctx):
     ctx.load('pebble_sdk')
@@ -45,6 +46,9 @@ def build(ctx):
     for p in ctx.env.TARGET_PLATFORMS:
         ctx.set_env(ctx.all_envs[p])
         ctx.set_group(ctx.env.PLATFORM_NAME)
+        # for --no-log option
+        if ctx.options.no_log:
+            ctx.env.append_value('DEFINES', 'NOLOG')
         app_elf='{}/pebble-app.elf'.format(p)
         ctx.pbl_program(source=ctx.path.ant_glob('src/**/*.c'),
         target=app_elf)

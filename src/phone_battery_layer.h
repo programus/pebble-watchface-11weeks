@@ -9,7 +9,7 @@
 #ifndef __pebble_watchface_months__phone_battery_layer__
 #define __pebble_watchface_months__phone_battery_layer__
 
-#include <pebble.h>
+#include "necessary.h"
 
 #define CHARGING_MASK   0x80
 #define LEVEL_MASK      0x7f

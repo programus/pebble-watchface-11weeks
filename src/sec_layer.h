@@ -9,7 +9,7 @@
 #ifndef __pebble_watchface_months__sec_layer__
 #define __pebble_watchface_months__sec_layer__
 
-#include <pebble.h>
+#include "necessary.h"
 
 void sec_layer_create();
 Layer* sec_layer_get_layer();

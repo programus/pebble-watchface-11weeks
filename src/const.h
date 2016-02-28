@@ -1,4 +1,4 @@
-#include <pebble.h>
+#include "necessary.h"
 
 #define SCREEN_WIDTH  144
 #define SCREEN_HEIGHT 168
