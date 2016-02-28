@@ -1,5 +1,5 @@
 #pragma once
-#include <pebble.h>
+#include "necessary.h"
 
 #define NUM_COUNT  10
 

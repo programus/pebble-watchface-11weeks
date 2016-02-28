@@ -9,7 +9,7 @@
 #ifndef __pebble_watchface_months__bluetooth_layer__
 #define __pebble_watchface_months__bluetooth_layer__
 
-#include <pebble.h>
+#include "necessary.h"
 
 void bluetooth_layer_create();
 void bluetooth_layer_destroy();

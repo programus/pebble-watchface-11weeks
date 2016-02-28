@@ -9,7 +9,7 @@
 #ifndef __pebble_watchface_months__letters__
 #define __pebble_watchface_months__letters__
 
-#include <pebble.h>
+#include "necessary.h"
 #include "const.h"
 
 #define LETTER_COUNT  26
