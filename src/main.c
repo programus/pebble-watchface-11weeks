@@ -11,7 +11,8 @@
 #include "phone_battery_layer.h"
 #include "bluetooth_layer.h"
 
-#define KEY_PHONE_BATTERY    8
+#define KEY_PHONE_BATTERY     8
+#define PKEY_CONFIG           0x0f
 
 static AppSync s_sync;
 static uint8_t* s_sync_buffer;

@@ -12,6 +12,7 @@
 		78EAD22434DE4109B82F8A69 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = ED3EF916224C4A1D83E2740C /* main.c */; };
 		82B0D3BD60BE443B86759650 /* numbers.c in Sources */ = {isa = PBXBuildFile; fileRef = 0163D4BDDED94A4E9D7FCEE2 /* numbers.c */; };
 		98079DA1DAE945CEAFFB8574 /* letters.c in Sources */ = {isa = PBXBuildFile; fileRef = 6F0832E8782A42849CF8CB5F /* letters.c */; };
+		B6896A9D1C8C1C1D00CA4F5B /* config.c in Sources */ = {isa = PBXBuildFile; fileRef = B6896A9C1C8C1C1D00CA4F5B /* config.c */; };
 		D56A801F34114657B2C7472D /* frame_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = 4AA83AA011CE4942ACA4B05F /* frame_layer.c */; };
 		DDB8A1F267AB41719CD580F3 /* bluetooth_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = 1F3DC5331C5245DD9DA586E8 /* bluetooth_layer.c */; };
 		E1A7FFCD75A84EA0A26E4E3C /* watch_battery_layer.c in Sources */ = {isa = PBXBuildFile; fileRef = 333861BDF781427AB8E26AFE /* watch_battery_layer.c */; };
@@ -41,6 +42,8 @@
 		B230F0B7487945DD8B22F729 /* main.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
 		B57EC709BCC64BCBB408DC23 /* sec_layer.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = sec_layer.c; sourceTree = "<group>"; };
 		B6137FF01C82F88F00DEDD8A /* necessary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = necessary.h; sourceTree = "<group>"; };
+		B6896A9B1C8C19A100CA4F5B /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
+		B6896A9C1C8C1C1D00CA4F5B /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
 		BB684D143C13433086480151 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		ED3EF916224C4A1D83E2740C /* main.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		F1799E4334C44705871FBD70 /* sec_layer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = sec_layer.h; sourceTree = "<group>"; };
@@ -91,6 +94,8 @@
 				F1799E4334C44705871FBD70 /* sec_layer.h */,
 				3B81A67427D74DD091A58FE4 /* watch_battery_layer.h */,
 				B6137FF01C82F88F00DEDD8A /* necessary.h */,
+				B6896A9B1C8C19A100CA4F5B /* config.h */,
+				B6896A9C1C8C1C1D00CA4F5B /* config.c */,
 			);
 			name = sources;
 			path = src;
@@ -190,6 +195,7 @@
 				E346473418CE449FA5E45247 /* phone_battery_layer.c in Sources */,
 				F5B50CC5E1444161A228FAFF /* sec_layer.c in Sources */,
 				E1A7FFCD75A84EA0A26E4E3C /* watch_battery_layer.c in Sources */,
+				B6896A9D1C8C1C1D00CA4F5B /* config.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
