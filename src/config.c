@@ -2,12 +2,13 @@
 //  config.c
 //  pebble-watchface-11weeks
 //
-//  Created by 王元 on 16/3/6.
+//  Created by Programus on 2016/3/6.
 //
 //
 
 #include "config.h"
 
+// all flags are for hiding.
 #define SEC_FLG = 1
 #define FRAME_FLG = (1 << 1)
 #define BATTERY_FLG = (1 << 2)
@@ -30,19 +31,31 @@ void set_config(int32_t config) {
 }
 
 bool show_sec() {
-  return is_flag_marked(SEC_FLG);
+  return !is_flag_marked(SEC_FLG);
 }
 
 bool show_frame() {
-  return is_flag_marked(FRAME_FLG);
+  return !is_flag_marked(FRAME_FLG);
 }
 
 bool show_battery() {
-  return is_flag_marked(BATTERY_FLG);
+  return !is_flag_marked(BATTERY_FLG);
 }
 
 bool show_bt_phone() {
-  return is_flag_marked(BT_PHONE_FLG);
+  return !is_flag_marked(BT_PHONE_FLG);
+}
+
+bool need_sec_update() {
+  return show_sec() || show_frame();
+}
+
+bool need_bluetooth_handler() {
+  return show_bt_phone();
+}
+
+bool need_battery_handler() {
+  return show_battery();
 }
 
 bool is_flag_marked(int flag) {

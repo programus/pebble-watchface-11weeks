@@ -2,7 +2,7 @@
 //  config.h
 //  pebble-watchface-11weeks
 //
-//  Created by 王元 on 16/3/6.
+//  Created by Programus on 2016/3/6.
 //
 //
 
@@ -20,5 +20,9 @@ bool show_sec();
 bool show_frame();
 bool show_battery();
 bool show_bt_phone();
+
+bool need_sec_update();
+bool need_bluetooth_handler();
+bool need_battery_handler();
 
 #endif /* config_h */
