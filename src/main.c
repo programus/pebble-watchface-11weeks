@@ -1,6 +1,8 @@
 #include "necessary.h"
 #include "main.h"
 
+#include "config.h"
+
 #include "numbers.h"
 #include "letters.h"
 
@@ -12,6 +14,7 @@
 #include "bluetooth_layer.h"
 
 #define KEY_PHONE_BATTERY     8
+// persistent key for config
 #define PKEY_CONFIG           0x0f
 
 static AppSync s_sync;
@@ -47,6 +50,8 @@ static void update_phone_battery(uint8_t state);
 static void bt_handler(bool connected);
 
 static void init() {
+  // load config from storage
+  load_config(PKEY_CONFIG);
   // init numbers
   numbers_create();
   // init letters
@@ -80,6 +85,10 @@ static void init() {
 }
 
 static void deinit() {
+  // save config to storage
+  status_t rc = save_config(PKEY_CONFIG);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "saved config status is: %d", rc);
+  
   deinit_sync();
   window_destroy(s_main_window);
   letters_destroy();
