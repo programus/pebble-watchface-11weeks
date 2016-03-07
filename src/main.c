@@ -17,6 +17,12 @@
 // persistent key for config
 #define PKEY_CONFIG           0x0f
 
+#define SEC_TICK_FLG          1
+#define BATTERY_FLG           (1 << 1)
+#define BT_PHONE_FLG          (1 << 2)
+
+static uint8_t s_stat = 0;
+
 static AppSync s_sync;
 static uint8_t* s_sync_buffer;
 
@@ -48,6 +54,24 @@ static void sync_error_handler(DictionaryResult dict_error, AppMessageResult app
 static void update_phone_battery(uint8_t state);
 
 static void bt_handler(bool connected);
+static ConnectionHandlers conn_handlers = {
+  .pebble_app_connection_handler = bt_handler,
+  .pebblekit_connection_handler = NULL
+};
+
+static bool is_flag_marked(uint8_t flag);
+static bool is_bt_phone_subscribed();
+
+static bool is_flag_marked(uint8_t flag) {
+  return (s_stat & flag) == flag;
+}
+
+static bool is_bt_phone_subscribed() {
+  return is_flag_marked(BT_PHONE_FLG);
+}
+
+
+static void apply_config();
 
 static void init() {
   // load config from storage
@@ -68,18 +92,6 @@ static void init() {
   // set background color
   window_set_background_color(s_main_window, GColorBlack);
   
-  // register the time tick service
-  tick_timer_service_subscribe(SECOND_UNIT, tick_handler);
-  
-  // register the battery service
-  battery_state_service_subscribe(battery_handler);
-  
-  // register the bluetooth service
-  bluetooth_connection_service_subscribe(bt_handler);
-  
-  // init AppSync
-  init_sync();
-  
   // show window on the watch, with animated = true
   window_stack_push(s_main_window, true);
 }
@@ -87,12 +99,47 @@ static void init() {
 static void deinit() {
   // save config to storage
   status_t rc = save_config(PKEY_CONFIG);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "saved config status is: %d", rc);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "saved config status is: %d", (int)rc);
   
-  deinit_sync();
+  if (is_bt_phone_subscribed()) {
+    deinit_sync();
+  }
+  battery_state_service_unsubscribe();
+  connection_service_unsubscribe();
+  
   window_destroy(s_main_window);
   letters_destroy();
   numbers_destroy();
+}
+
+static void apply_config() {
+  // update tick rate
+  tick_timer_service_subscribe(need_sec_update() ? SECOND_UNIT : MINUTE_UNIT, tick_handler);
+  // update battery service
+  if (need_battery_handler()) {
+    battery_state_service_subscribe(battery_handler);
+    battery_handler(battery_state_service_peek());
+  } else {
+    battery_state_service_unsubscribe();
+  }
+  // update connection service
+  if (need_bluetooth_handler() != is_bt_phone_subscribed()) {
+    if (need_bluetooth_handler()) {
+      connection_service_subscribe(conn_handlers);
+      conn_handlers.pebble_app_connection_handler(connection_service_peek_pebble_app_connection());
+      init_sync();
+    } else {
+      connection_service_unsubscribe();
+      deinit_sync();
+    }
+    s_stat ^= BT_PHONE_FLG;
+  }
+  // update display
+  layer_set_hidden(s_sec_layer, hide_sec());
+  layer_set_hidden(s_frame_layer, hide_frame());
+  layer_set_hidden(s_watch_battery_layer, hide_battery());
+  layer_set_hidden(s_bluetooth_layer, hide_bt_phone());
+  layer_set_hidden(s_phone_battery_layer, hide_bt_phone() || !s_battery_api_supported);
 }
 
 static void main_window_load(Window* window) {
@@ -121,12 +168,10 @@ static void main_window_load(Window* window) {
   s_bluetooth_layer = bluetooth_layer_get_layer();
   layer_add_child(window_get_root_layer(s_main_window), s_bluetooth_layer);
   
+  apply_config();
+  
   // display time from the beginning
   update_time(true);
-  // display battery status from the beginning
-  battery_handler(battery_state_service_peek());
-  // display bluetooth status from the beginning
-  bt_handler(bluetooth_connection_service_peek());
 }
 
 static void main_window_unload(Window* window) {
@@ -155,11 +200,15 @@ static void update_time(bool is_init) {
 //  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d",
 //          s_now_tm.tm_year + 1900, s_now_tm.tm_mon + 1, s_now_tm.tm_mday, s_now_tm.tm_hour, s_now_tm.tm_min, s_now_tm.tm_sec);
   
-  sec_layer_update_time(&s_now_t, &s_now_tm);
-  layer_mark_dirty(s_sec_layer);
-  frame_layer_update_time(&s_now_t, &s_now_tm);
-  layer_mark_dirty(s_frame_layer);
-  if (is_init || s_now_tm.tm_sec == 0) {
+  if (!hide_sec()) {
+    sec_layer_update_time(&s_now_t, &s_now_tm);
+    layer_mark_dirty(s_sec_layer);
+  }
+  if (!hide_frame()) {
+    frame_layer_update_time(&s_now_t, &s_now_tm);
+    layer_mark_dirty(s_frame_layer);
+  }
+  if (is_init || s_now_tm.tm_sec == 0 || !need_sec_update()) {
     calendar_layer_update_time(&s_now_t, &s_now_tm);
     layer_mark_dirty(s_calendar_layer);
   }

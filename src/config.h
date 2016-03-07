@@ -16,10 +16,10 @@ void load_config(const uint32_t key);
 
 void set_config(int32_t config);
 
-bool show_sec();
-bool show_frame();
-bool show_battery();
-bool show_bt_phone();
+bool hide_sec();
+bool hide_frame();
+bool hide_battery();
+bool hide_bt_phone();
 
 bool need_sec_update();
 bool need_bluetooth_handler();

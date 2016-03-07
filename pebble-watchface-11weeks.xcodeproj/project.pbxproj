@@ -235,8 +235,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}",
-					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.7/sdk-core/pebble/basalt/include/**",
-					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.7/sdk-core/pebble/aplite/include/**",
+					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.9.2/sdk-core/pebble/basalt/include/**",
+					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.9.2/sdk-core/pebble/aplite/include/**",
 					build,
 				);
 				ONLY_ACTIVE_ARCH = YES;
@@ -296,8 +296,8 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"${SRCROOT}",
-					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.7/sdk-core/pebble/basalt/include/**",
-					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.7/sdk-core/pebble/aplite/include/**",
+					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.9.2/sdk-core/pebble/basalt/include/**",
+					"/Users/programus/Library/Application\\ Support/Pebble\\ SDK/SDKs/3.9.2/sdk-core/pebble/aplite/include/**",
 					build,
 				);
 				VALIDATE_PRODUCT = YES;
