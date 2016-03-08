@@ -3,7 +3,7 @@
         "KEY_PHONE_BATTERY": 8
     },
     "capabilities": [
-        ""
+        "configurable"
     ],
     "companyName": "programus@gmail.com",
     "longName": "11 Weeks Watchface",

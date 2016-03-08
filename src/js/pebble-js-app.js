@@ -54,3 +54,7 @@ Pebble.addEventListener('ready', function (e) {
     handleBattery();
   }
 });
+
+Pebble.addEventListener('showConfiguration', function(e) {
+  Pebble.openURL('file:///Users/programus/git-repos.localized/pebble-watchface-11weeks/src/html/config.html');
+})

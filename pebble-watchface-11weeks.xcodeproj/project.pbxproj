@@ -44,6 +44,7 @@
 		B6137FF01C82F88F00DEDD8A /* necessary.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = necessary.h; sourceTree = "<group>"; };
 		B6896A9B1C8C19A100CA4F5B /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		B6896A9C1C8C1C1D00CA4F5B /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
+		B6896A9F1C8EF79B00CA4F5B /* config.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = config.html; path = html/config.html; sourceTree = "<group>"; };
 		BB684D143C13433086480151 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		ED3EF916224C4A1D83E2740C /* main.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		F1799E4334C44705871FBD70 /* sec_layer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = sec_layer.h; sourceTree = "<group>"; };
@@ -73,6 +74,7 @@
 		1D7905D12472463A993620BD /* sources */ = {
 			isa = PBXGroup;
 			children = (
+				B6896A9E1C8EF72400CA4F5B /* html */,
 				B6080DDC1C096ABD007A9C8F /* js */,
 				1F3DC5331C5245DD9DA586E8 /* bluetooth_layer.c */,
 				8A604F51EFE046FA8D7941D2 /* calendar_layer.c */,
@@ -117,6 +119,14 @@
 				FB9AA3384DC1497CA0950AEE /* pebble-js-app.js */,
 			);
 			name = js;
+			sourceTree = "<group>";
+		};
+		B6896A9E1C8EF72400CA4F5B /* html */ = {
+			isa = PBXGroup;
+			children = (
+				B6896A9F1C8EF79B00CA4F5B /* config.html */,
+			);
+			name = html;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
