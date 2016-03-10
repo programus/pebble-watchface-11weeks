@@ -31,6 +31,10 @@ void set_config(int32_t config) {
   s_config = config;
 }
 
+int32_t get_config() {
+  return s_config;
+}
+
 bool hide_sec() {
   return is_flag_marked(SEC_FLG);
 }

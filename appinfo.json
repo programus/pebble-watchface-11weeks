@@ -1,6 +1,7 @@
 {
     "appKeys": {
-        "KEY_PHONE_BATTERY": 8
+        "KEY_PHONE_BATTERY": 8,
+        "KEY_CONFIG_VALUE":  6
     },
     "capabilities": [
         "configurable"

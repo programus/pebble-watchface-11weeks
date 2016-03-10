@@ -1,8 +1,12 @@
 var battery;
+var config;
 
 var CHARGING_MASK =           0x80;
 var LEVEL_MASK =              0x7f;
 var BATTERY_API_UNSUPPORTED = 0x70;
+
+var PKEY_CONFIG = "pebble-watch-11weeks-config";
+var DEFAULT_CONFIG = 0;
 
 var getBatteryStateInt = function () {
   'use strict';
@@ -26,8 +30,11 @@ var sendBatteryState = function () {
   var dict = {
     "KEY_PHONE_BATTERY": getBatteryStateInt()
   };
-  Pebble.sendAppMessage(dict);
-  console.log('battery state sent');
+  Pebble.sendAppMessage(dict, function() {
+    console.log('Message sent successfully: ' + JSON.stringify(dict));
+  }, function(e) {
+    console.log('Message failed: ' + JSON.stringify(e));
+  });
 };
 
 var handleBattery = function () {
@@ -39,7 +46,7 @@ var handleBattery = function () {
   sendBatteryState();
 };
 
-Pebble.addEventListener('ready', function (e) {
+var initBattery = function () {
   'use strict';
   battery = navigator.battery || navigator.webkitBattery || navigator.mozBattery;
   console.log("set battery: " + battery);
@@ -53,8 +60,32 @@ Pebble.addEventListener('ready', function (e) {
   } else {
     handleBattery();
   }
+};
+
+var sendConfig = function () {
+  'use strict';
+  var dict = {
+    'KEY_CONFIG_VALUE': config
+  };
+  Pebble.sendAppMessage(dict, function() {
+    console.log('Message sent successfully: ' + JSON.stringify(dict));
+  }, function(e) {
+    console.log('Message failed: ' + JSON.stringify(e));
+  });
+};
+
+var initConfig = function () {
+  config = window.localStorage.getItem(PKEY_CONFIG) || DEFAULT_CONFIG;
+  sendConfig();
+}
+
+Pebble.addEventListener('ready', function (e) {
+  'use strict';
+  initBattery();
+  initConfig();
 });
 
 Pebble.addEventListener('showConfiguration', function(e) {
-  Pebble.openURL('file:///Users/programus/git-repos.localized/pebble-watchface-11weeks/src/html/config.html');
+  'use strict';
+  Pebble.openURL('https://raw.githubusercontent.com/programus/pebble-watchface-11weeks/app-config/src/html/config.html');
 })

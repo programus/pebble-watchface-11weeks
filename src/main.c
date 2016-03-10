@@ -14,17 +14,12 @@
 #include "bluetooth_layer.h"
 
 #define KEY_PHONE_BATTERY     8
+#define KEY_CONFIG_VALUE      6
 // persistent key for config
 #define PKEY_CONFIG           0x0f
 
-#define SEC_TICK_FLG          1
-#define BATTERY_FLG           (1 << 1)
-#define BT_PHONE_FLG          (1 << 2)
-
-static uint8_t s_stat = 0;
-
 static AppSync s_sync;
-static uint8_t* s_sync_buffer;
+static uint8_t* s_sync_buffer = NULL;
 
 static Window* s_main_window;
 static Layer* s_calendar_layer;
@@ -59,18 +54,6 @@ static ConnectionHandlers conn_handlers = {
   .pebblekit_connection_handler = NULL
 };
 
-static bool is_flag_marked(uint8_t flag);
-static bool is_bt_phone_subscribed();
-
-static bool is_flag_marked(uint8_t flag) {
-  return (s_stat & flag) == flag;
-}
-
-static bool is_bt_phone_subscribed() {
-  return is_flag_marked(BT_PHONE_FLG);
-}
-
-
 static void apply_config();
 
 static void init() {
@@ -92,6 +75,9 @@ static void init() {
   // set background color
   window_set_background_color(s_main_window, GColorBlack);
   
+  // initialize bluetooth communication
+  init_sync();
+  
   // show window on the watch, with animated = true
   window_stack_push(s_main_window, true);
 }
@@ -101,9 +87,7 @@ static void deinit() {
   status_t rc = save_config(PKEY_CONFIG);
   APP_LOG(APP_LOG_LEVEL_DEBUG, "saved config status is: %d", (int)rc);
   
-  if (is_bt_phone_subscribed()) {
-    deinit_sync();
-  }
+  deinit_sync();
   battery_state_service_unsubscribe();
   connection_service_unsubscribe();
   
@@ -113,6 +97,7 @@ static void deinit() {
 }
 
 static void apply_config() {
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "apply config: %d", (int) get_config());
   // update tick rate
   tick_timer_service_subscribe(need_sec_update() ? SECOND_UNIT : MINUTE_UNIT, tick_handler);
   // update battery service
@@ -123,16 +108,11 @@ static void apply_config() {
     battery_state_service_unsubscribe();
   }
   // update connection service
-  if (need_bluetooth_handler() != is_bt_phone_subscribed()) {
-    if (need_bluetooth_handler()) {
-      connection_service_subscribe(conn_handlers);
-      conn_handlers.pebble_app_connection_handler(connection_service_peek_pebble_app_connection());
-      init_sync();
-    } else {
-      connection_service_unsubscribe();
-      deinit_sync();
-    }
-    s_stat ^= BT_PHONE_FLG;
+  if (need_bluetooth_handler()) {
+    connection_service_subscribe(conn_handlers);
+    conn_handlers.pebble_app_connection_handler(connection_service_peek_pebble_app_connection());
+  } else {
+    connection_service_unsubscribe();
   }
   // update display
   layer_set_hidden(s_sec_layer, hide_sec());
@@ -220,17 +200,20 @@ static void battery_handler(BatteryChargeState charge_state) {
 }
 
 static void init_sync() {
-  // setup AppSync
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-  
   // setup initial value
   Tuplet initial_values[] = {
     TupletInteger(KEY_PHONE_BATTERY, BATTERY_API_UNSUPPORTED),
+    TupletInteger(KEY_CONFIG_VALUE, get_config()),
   };
   
   // create buffer
   uint32_t size = dict_calc_buffer_size_from_tuplets(initial_values, ARRAY_LENGTH(initial_values));
   s_sync_buffer = malloc(size * sizeof(uint8_t));
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "communicate dict size: %d, buffer size: %d bytes", (int) size, (int) size * sizeof(uint8_t));
+  
+  // setup AppSync
+  // send battery info and config at the same time need twice size.
+  app_message_open(size << 1, 0);
   
   // Begin using AppSync
   app_sync_init(&s_sync, s_sync_buffer, size, initial_values, ARRAY_LENGTH(initial_values), sync_changed_handler, sync_error_handler, NULL);
@@ -238,6 +221,8 @@ static void init_sync() {
 
 static void deinit_sync() {
   app_sync_deinit(&s_sync);
+  free(s_sync_buffer);
+  s_sync_buffer = NULL;
 }
 
 static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, const Tuple *old_tuple, void *context) {
@@ -245,6 +230,13 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
     case KEY_PHONE_BATTERY:
     {
       update_phone_battery(new_tuple->value->int8);
+    }
+    break;
+    case KEY_CONFIG_VALUE:
+    {
+      set_config(new_tuple->value->int32);
+      APP_LOG(APP_LOG_LEVEL_DEBUG, "received config: %d", (int) get_config());
+      apply_config();
     }
     break;
     

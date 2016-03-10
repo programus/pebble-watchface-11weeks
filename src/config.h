@@ -15,6 +15,7 @@ status_t save_config(const uint32_t key);
 void load_config(const uint32_t key);
 
 void set_config(int32_t config);
+int32_t get_config();
 
 bool hide_sec();
 bool hide_frame();
