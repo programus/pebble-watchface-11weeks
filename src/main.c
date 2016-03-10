@@ -161,9 +161,6 @@ static void battery_handler(BatteryChargeState charge_state) {
 }
 
 static void init_sync() {
-  // setup AppSync
-  app_message_open(app_message_inbox_size_maximum(), app_message_outbox_size_maximum());
-  
   // setup initial value
   Tuplet initial_values[] = {
     TupletInteger(KEY_PHONE_BATTERY, BATTERY_API_UNSUPPORTED),
@@ -172,6 +169,9 @@ static void init_sync() {
   // create buffer
   uint32_t size = dict_calc_buffer_size_from_tuplets(initial_values, ARRAY_LENGTH(initial_values));
   s_sync_buffer = malloc(size * sizeof(uint8_t));
+  
+  // setup AppSync
+  app_message_open(size << 1, 0);
   
   // Begin using AppSync
   app_sync_init(&s_sync, s_sync_buffer, size, initial_values, ARRAY_LENGTH(initial_values), sync_changed_handler, sync_error_handler, NULL);
