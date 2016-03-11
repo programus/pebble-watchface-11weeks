@@ -87,5 +87,5 @@ Pebble.addEventListener('ready', function (e) {
 
 Pebble.addEventListener('showConfiguration', function(e) {
   'use strict';
-  Pebble.openURL('https://raw.githubusercontent.com/programus/pebble-watchface-11weeks/app-config/src/html/config.html');
+  Pebble.openURL('file:///Users/programus/git-repos.localized/pebble-watchface-11weeks/src/html/config.html');
 })

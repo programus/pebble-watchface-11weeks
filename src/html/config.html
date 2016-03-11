@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <title>11 Weeks Configuration</title>
+  <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
+  <script src='js/slate.min.js'></script>
+  <style>
+  .title {
+    padding: 15px 10px;
+    text-transform: uppercase;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #888888;
+    text-align: center;
+  }
+
+  .watch {
+    text-align: center;
+  }
+  </style>
+  </head>
+
+  <body>
+    <h1 class='title'>11 Weeks Configuration</h1>
+
+    <div class='item-container'>
+      <div class='item-container-header'>Preview</div>
+      <div class='item-container-content watch'>
+        <div class='item'>
+          <canvas width="144" height="168" style="background:blue;">
+          </canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class='item-container'>
+      <div class='item-container-header'>Optional Components</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Seconds (refresh per sec)
+          <input id='sec-layer' type='checkbox' class='item-toggle'>
+        </label>
+        <label class='item'>
+          Outline Frame (refresh per sec)
+          <input id='frame-layer' type='checkbox' class='item-toggle'>
+        </label>
+        <label class='item'>
+          Pebble Battery
+          <input id='battery-layer' type='checkbox' class='item-toggle'>
+        </label>
+        <label class='item'>
+          Phone Battery &amp; Bluetooth
+          <input id='bt-phone-layer' type='checkbox' class='item-toggle'>
+        </label>
+      </div>
+    </div>
+
+    <div class='item-container'>
+      <div class='button-container'>
+        <input id='submit_button' type='button' class='item-button' value='SAVE'>
+      </div>
+    </div>
+  </body>
+  <script>
+  var keys = [
+    'sec-layer', 
+    'frame-layer',
+    'battery-layer',
+    'bt-phone-layer'
+  ];
+  function getConfigData(needSave) {
+
+    var options = {};
+
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var ctrl = document.getElementById(key);
+      var value = ctrl.checked;
+      options[key] = value;
+
+      if (needSave) {
+        // if need save, save for next launch
+        localStorage[key] = value;
+      }
+    }
+
+    console.log('Got options: ' + JSON.stringify(options));
+    return options;
+  }
+
+  function getQueryParam(variable, defaultValue) {
+    var query = location.search.substring(1);
+    var vars = query.split('&');
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (pair[0] === variable) {
+        return decodeURIComponent(pair[1]);
+      }
+    }
+    return defaultValue || false;
+  }
+ 
+  var submitButton = document.getElementById('submit_button');
+  submitButton.addEventListener('click', function() {
+    console.log('Submit');
+
+    // Set the return URL depending on the runtime environment
+    var return_to = getQueryParam('return_to', 'pebblejs://close#');
+    document.location = return_to + encodeURIComponent(JSON.stringify(getConfigData()));
+  });
+
+  (function() {
+    // Load any previously saved configuration, if available
+    for (var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      var ctrl = document.getElementById(key);
+      var value = localStorage[key];
+      if (value) {
+        ctrl.checked = value;
+      }
+    }
+  })();
+  </script>
+</html>
