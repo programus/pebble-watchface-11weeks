@@ -52,3 +52,7 @@ Icon
 # Xcode user data
 xcuserdata/
 DerivedData/
+
+# vim
+*.swp
+*.swo
