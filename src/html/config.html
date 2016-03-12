@@ -80,7 +80,7 @@
 
       if (needSave) {
         // if need save, save for next launch
-        if (value) {
+        if (!value) {
           localStorage.setItem(key, '1');
         } else {
           localStorage.removeItem(key);
@@ -131,7 +131,7 @@
     for (var key in keys) {
       var ctrl = document.getElementById(key);
       var value = localStorage[key];
-      ctrl.checked = value ? true : false;
+      ctrl.checked = value ? false : true;
     }
   })();
   </script>
