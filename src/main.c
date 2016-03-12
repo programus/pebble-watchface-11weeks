@@ -118,7 +118,7 @@ static void apply_config() {
   layer_set_hidden(s_sec_layer, hide_sec());
   layer_set_hidden(s_frame_layer, hide_frame());
   layer_set_hidden(s_watch_battery_layer, hide_battery());
-  layer_set_hidden(s_bluetooth_layer, hide_bt_phone());
+  layer_set_hidden(s_bluetooth_layer, hide_bt_phone() || s_battery_api_supported);
   layer_set_hidden(s_phone_battery_layer, hide_bt_phone() || !s_battery_api_supported);
 }
 
