@@ -28,7 +28,7 @@
       <div class='item-container-header'>Preview</div>
       <div class='item-container-content watch'>
         <div class='item'>
-          <canvas width="144" height="168" style="background:blue;">
+          <canvas width="144" height="168" style="background:white;">
           </canvas>
         </div>
       </div>
@@ -39,19 +39,19 @@
       <div class='item-container-content'>
         <label class='item'>
           Seconds (refresh per sec)
-          <input id='sec-layer' type='checkbox' class='item-toggle'>
+          <input id='sec-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
           Outline Frame (refresh per sec)
-          <input id='frame-layer' type='checkbox' class='item-toggle'>
+          <input id='frame-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
           Pebble Battery
-          <input id='battery-layer' type='checkbox' class='item-toggle'>
+          <input id='battery-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
           Phone Battery &amp; Bluetooth
-          <input id='bt-phone-layer' type='checkbox' class='item-toggle'>
+          <input id='bt-phone-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
       </div>
     </div>
@@ -63,25 +63,28 @@
     </div>
   </body>
   <script>
-  var keys = [
-    'sec-layer', 
-    'frame-layer',
-    'battery-layer',
-    'bt-phone-layer'
-  ];
+  var keys = {
+    'sec-layer': 1, 
+    'frame-layer': 2,
+    'battery-layer': 4,
+    'bt-phone-layer': 8
+  };
   function getConfigData(needSave) {
 
     var options = {};
 
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
+    for (var key in keys) {
       var ctrl = document.getElementById(key);
       var value = ctrl.checked;
       options[key] = value;
 
       if (needSave) {
         // if need save, save for next launch
-        localStorage[key] = value;
+        if (value) {
+          localStorage.setItem(key, '1');
+        } else {
+          localStorage.removeItem(key);
+        }
       }
     }
 
@@ -100,6 +103,19 @@
     }
     return defaultValue || false;
   }
+
+  function getConfigFlags() {
+    var options = getConfigData(true);
+    var config = 0;
+    for (var key in keys) {
+      if (!options[key]) {
+        config |= keys[key];
+      }
+    }
+    return {
+      'config': config
+    };
+  }
  
   var submitButton = document.getElementById('submit_button');
   submitButton.addEventListener('click', function() {
@@ -107,18 +123,15 @@
 
     // Set the return URL depending on the runtime environment
     var return_to = getQueryParam('return_to', 'pebblejs://close#');
-    document.location = return_to + encodeURIComponent(JSON.stringify(getConfigData()));
+    document.location = return_to + encodeURIComponent(JSON.stringify(getConfigFlags()));
   });
 
   (function() {
     // Load any previously saved configuration, if available
-    for (var i = 0; i < keys.length; i++) {
-      var key = keys[i];
+    for (var key in keys) {
       var ctrl = document.getElementById(key);
       var value = localStorage[key];
-      if (value) {
-        ctrl.checked = value;
-      }
+      ctrl.checked = value ? true : false;
     }
   })();
   </script>
