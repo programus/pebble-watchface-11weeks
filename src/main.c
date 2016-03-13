@@ -100,6 +100,7 @@ static void apply_config() {
   APP_LOG(APP_LOG_LEVEL_DEBUG, "apply config: %d", (int) get_config());
   // update tick rate
   tick_timer_service_subscribe(need_sec_update() ? SECOND_UNIT : MINUTE_UNIT, tick_handler);
+  update_time(false);
   // update battery service
   if (need_battery_handler()) {
     battery_state_service_subscribe(battery_handler);
@@ -118,8 +119,13 @@ static void apply_config() {
   layer_set_hidden(s_sec_layer, hide_sec());
   layer_set_hidden(s_frame_layer, hide_frame());
   layer_set_hidden(s_watch_battery_layer, hide_battery());
-  layer_set_hidden(s_bluetooth_layer, hide_bt_phone() || s_battery_api_supported);
-  layer_set_hidden(s_phone_battery_layer, hide_bt_phone() || !s_battery_api_supported);
+  if (hide_bt_phone()) {
+    layer_set_hidden(s_bluetooth_layer, true);
+    layer_set_hidden(s_phone_battery_layer, true);
+  } else {
+    layer_set_hidden(s_bluetooth_layer, s_battery_api_supported);
+    layer_set_hidden(s_phone_battery_layer, !s_battery_api_supported);
+  }
 }
 
 static void main_window_load(Window* window) {
@@ -177,8 +183,8 @@ static void update_time(bool is_init) {
   time(&s_now_t);
   struct tm* st = localtime(&s_now_t);
   memcpy(&s_now_tm, st, sizeof(s_now_tm));
-//  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d",
-//          s_now_tm.tm_year + 1900, s_now_tm.tm_mon + 1, s_now_tm.tm_mday, s_now_tm.tm_hour, s_now_tm.tm_min, s_now_tm.tm_sec);
+  APP_LOG(APP_LOG_LEVEL_DEBUG, "Now: %d-%d-%d %d:%d:%d",
+          s_now_tm.tm_year + 1900, s_now_tm.tm_mon + 1, s_now_tm.tm_mday, s_now_tm.tm_hour, s_now_tm.tm_min, s_now_tm.tm_sec);
   
   if (!hide_sec()) {
     sec_layer_update_time(&s_now_t, &s_now_tm);
@@ -229,7 +235,9 @@ static void sync_changed_handler(const uint32_t key, const Tuple *new_tuple, con
   switch (key) {
     case KEY_PHONE_BATTERY:
     {
-      update_phone_battery(new_tuple->value->int8);
+      if (need_bluetooth_handler()) {
+        update_phone_battery(new_tuple->value->int8);
+      }
     }
     break;
     case KEY_CONFIG_VALUE:

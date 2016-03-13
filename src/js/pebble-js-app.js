@@ -74,18 +74,19 @@ var sendConfig = function () {
   });
 };
 
-var initConfig = function () {
-  config = window.localStorage.getItem(PKEY_CONFIG) || DEFAULT_CONFIG;
-  sendConfig();
-}
-
 Pebble.addEventListener('ready', function (e) {
   'use strict';
   initBattery();
-  initConfig();
 });
 
 Pebble.addEventListener('showConfiguration', function(e) {
   'use strict';
-  Pebble.openURL('file:///Users/programus/git-repos.localized/pebble-watchface-11weeks/src/html/config.html');
-})
+  Pebble.openURL('http://rawgit.com/programus/pebble-watchface-11weeks/app-config/src/html/config.html');
+});
+
+Pebble.addEventListener('webviewclosed', function(e) {
+  // Decode the user's preferences
+  var configData = JSON.parse(decodeURIComponent(e.response));
+  config = configData.config;
+  sendConfig();
+});
