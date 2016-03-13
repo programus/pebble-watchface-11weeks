@@ -45,6 +45,9 @@
 		B6896A9B1C8C19A100CA4F5B /* config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		B6896A9C1C8C1C1D00CA4F5B /* config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = config.c; sourceTree = "<group>"; };
 		B6896A9F1C8EF79B00CA4F5B /* config.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = config.html; path = html/config.html; sourceTree = "<group>"; };
+		B6896AA01C95416500CA4F5B /* css */ = {isa = PBXFileReference; lastKnownFileType = folder; name = css; path = html/css; sourceTree = "<group>"; };
+		B6896AA11C95416500CA4F5B /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = html/fonts; sourceTree = "<group>"; };
+		B6896AA21C95416500CA4F5B /* js */ = {isa = PBXFileReference; lastKnownFileType = folder; name = js; path = html/js; sourceTree = "<group>"; };
 		BB684D143C13433086480151 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		ED3EF916224C4A1D83E2740C /* main.c */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		F1799E4334C44705871FBD70 /* sec_layer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = sec_layer.h; sourceTree = "<group>"; };
@@ -124,6 +127,9 @@
 		B6896A9E1C8EF72400CA4F5B /* html */ = {
 			isa = PBXGroup;
 			children = (
+				B6896AA01C95416500CA4F5B /* css */,
+				B6896AA11C95416500CA4F5B /* fonts */,
+				B6896AA21C95416500CA4F5B /* js */,
 				B6896A9F1C8EF79B00CA4F5B /* config.html */,
 			);
 			name = html;
