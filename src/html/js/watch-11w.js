@@ -169,10 +169,10 @@ var watch = {
     numbers.drawTiny(this.ctx, date % 10, startPoint.x + 4, startPoint.y);
 
     if (isToday) {
-      this.ctx.globalCompositeOperation = 'lighter';
       // mark today
       this.ctx.strokeRect(startPoint.x - DX + 1.5, startPoint.y - DY + 0.5, CW - 4, CH - 2);
       // mark weekday
+      this.ctx.globalCompositeOperation = 'lighter';
       this.ctx.strokeRect(startPoint.x - DX + 0.5, SY - CH + 3.5, CW - 2, CH - 4);
     }
   },
