@@ -30,43 +30,80 @@ var images = {
     yesNo: 'yes_no.png'
   },
 
-  init: function() {
+  init: function(doneAction) {
     'use strict';
     // load images
     var key,
-        img;
+        img,
+        count = 0;
 
     if (Object.keys(this).length <= 3) {
       for (key in this.imagePaths) {
         img = new Image();
         img.src = this.IMAGE_PATH + this.imagePaths[key];
         this[key] = img;
+        self = this;
+        img.onload = function () {
+          count++;
+          if (count === Object.keys(self.imagePaths).length) {
+            doneAction();
+          }
+        }
       }
     }
-  }
+  } 
 };
 
 var numbers = {
-  bigSize: [42, 60],
-  tinySize: [3, 5],
+  bigSize: {w: 42, h: 60},
+  tinySize: {w: 3, h: 5},
 
   __drawNumber: function (ctx, n, x, y, src, size) {
-    ctx.drawImage(src, n * size[0], 0, size[0], size[1], x, y, size[0], size[1]);
+    ctx.drawImage(src, n * size.w, 0, size.w, size.h, x, y, size.w, size.h);
   },
 
   drawBig: function (ctx, n, x, y) {
-    this.__drawNumber(ctx, n, x, y, images.bigNumbers, this.bigSize);
+    this.__drawNumber(ctx, Math.floor(n % 10), x, y, images.bigNumbers, this.bigSize);
   },
 
   drawTiny: function (ctx, n, x, y) {
-    this.__drawNumber(ctx, n, x, y, images.numbers, this.tinySize);
+    this.__drawNumber(ctx, Math.floor(n % 10), x, y, images.numbers, this.tinySize);
   }
-}
+};
+
+var letters = {
+  size: {w: 3, h: 5},
+  a: 'a'.charCodeAt(0),
+  A: 'A'.charCodeAt(0),
+  count: 26,
+
+  drawLetter: function (ctx, letter, x, y) {
+    'use strict';
+    var code = letter.charCodeAt(0),
+        index = code >= this.a ? code - this.a : code - this.A;
+    if (index < this.count) {
+      ctx.drawImage(images.letters, index * this.size.w, 0, this.size.w, this.size.h, x, y, this.size.w, this.size.h);
+    }
+  },
+
+  drawString: function (ctx, str, x, y, space) {
+    'use strict';
+    var i;
+    for (i = 0; i < str.length; i++) {
+      this.drawLetter(ctx, str.charAt(i), x, y);
+      x += this.size.w + space;
+    }
+  }
+};
 
 var watch = {
   canvas: null,
   ctx: null,
   getConfig: null,
+  imageBuff: {
+    buff: null,
+    minTime: 0,
+  },
 
   MON_NAMES: [
     "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -84,6 +121,8 @@ var watch = {
       vendor = vendors[i];
       this.ctx[vendor + (vendor.length === 0 ? 'i' : 'I') + 'mageSmoothingEnabled'] = false;
     }
+    this.ctx.strokeStyle = '#fff';
+    this.ctx.fillStyle = '#fff';
   },
 
   beginDraw: function() {
@@ -96,12 +135,61 @@ var watch = {
 
   draw: function() {
     'use strict';
-    var time = new Date();
+    var time = new Date(),
+        minTime = Math.floor(time.getTime() / 60000),
+        config = this.getConfig(),
+        imgData;
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.drawBackground();
-    this.drawCalendar(time);
+    if (!this.imageBuff.buff || minTime != this.imageBuff.time) {
+      this.drawBackground();
+      this.drawCalendar(time);
+      imgData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+      this.imageBuff.buff = imgData;
+      this.imageBuff.time = minTime;
+    } else {
+      this.ctx.putImageData(this.imageBuff.buff, 0, 0);
+    }
+
+    if (config['sec-layer']) {
+      this.drawSeconds(time);
+    }
 
     this.beginDraw();
+  },
+
+  drawSeconds: function (time) {
+    'use strict';
+    // draw number
+    var p = {
+      x: this.canvas.width / 2 - numbers.tinySize.w,
+      y: SEC_SY
+    };
+    numbers.drawTiny(this.ctx, time.getSeconds() / 10, p.x, p.y);
+    numbers.drawTiny(this.ctx, time.getSeconds(), p.x + numbers.tinySize.w + 1, p.y);
+
+    // draw marks
+    var MARK_W = 10,
+        MARK_H = 3,
+        rect = {
+          x: SEC_SX + (CW - MARK_W) / 2 - 1,
+          y: SEC_SY + (SEC_H - MARK_H) / 2,
+          w: MARK_W,
+          h: MARK_H
+        }, 
+        i, index, cent;
+
+    for (i = 0; i < DW; i++) {
+      index = (i > 3) ? i - 1 : i;
+      cent = Math.floor(time.getSeconds() / 10);
+      if (index <= cent && i != 3) {
+        if (index === cent) {
+          rect.w = time.getSeconds() % 10;
+        }
+        this.ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+      }
+      rect.w = MARK_W;
+      rect.x += CW;
+    }
   },
 
   drawBackground: function () {
@@ -119,13 +207,13 @@ var watch = {
     'use strict';
     var comp = this.ctx.globalCompositeOperation;
     this.ctx.globalCompositeOperation = 'lighter';
-    var x1 = SX, x2 = SX + CW * 4, y1 = SY, y2 = SY + CH * 6;
-    var hours = time.getHours(), 
+    var x1 = SX, x2 = SX + CW * 4, y1 = SY, y2 = SY + CH * 6,
+        hours = time.getHours(), 
         minutes = time.getMinutes();
-    numbers.drawBig(this.ctx, Math.floor(hours / 10), x1, y1);
-    numbers.drawBig(this.ctx, hours % 10, x2, y1);
-    numbers.drawBig(this.ctx, Math.floor(minutes / 10), x1, y2);
-    numbers.drawBig(this.ctx, minutes % 10, x2, y2);
+    numbers.drawBig(this.ctx, hours / 10, x1, y1);
+    numbers.drawBig(this.ctx, hours, x2, y1);
+    numbers.drawBig(this.ctx, minutes / 10, x1, y2);
+    numbers.drawBig(this.ctx, minutes, x2, y2);
     this.ctx.globalCompositeOperation = comp;
   },
 
@@ -138,7 +226,6 @@ var watch = {
         needDisplayMonth,
         needDisplayYear,
         isToday;
-    this.ctx.strokeStyle = '#fff';
 
     for (week = 0; week < WN; week++) {
       includeToday = false;
@@ -151,9 +238,61 @@ var watch = {
 
       needDisplayMonth = st.getDate() > 1 && st.getDate() <= DW + 1;
       needDisplayYear = week === 0 || (st.getMonth() === 0 && needDisplayMonth);
+
+      if (needDisplayYear) {
+        this.drawYear(st.getFullYear(), week);
+      } else if (includeToday) {
+        this.drawCurrWeekIndicator(week, true);
+      }
+
+      if (needDisplayMonth) {
+        this.drawMonth(st.getMonth(), week);
+      } else if (includeToday) {
+        this.drawCurrWeekIndicator(week, false);
+      }
     }
 
     this.ctx.globalCompositeOperation = comp;
+  },
+
+  drawYear: function(year, week) {
+    'use strict';
+    var p = {
+      x: SX - DX - numbers.tinySize.w * 2 - 3, 
+      y: SY + CH * week
+    };
+    numbers.drawTiny(this.ctx, year / 1000, p.x, p.y);
+    p.x += numbers.tinySize.w + 2;
+    numbers.drawTiny(this.ctx, year / 100, p.x, p.y);
+    p.y += numbers.tinySize.h + 1;
+    numbers.drawTiny(this.ctx, year, p.x, p.y);
+    p.x -= numbers.tinySize.w + 2;
+    numbers.drawTiny(this.ctx, year / 10, p.x, p.y);
+  },
+
+  drawMonth: function(month, week) {
+    'use strict';
+    var p = {
+      x: SX + DW * CW + DX,
+      y: SY + DY + CH * week
+    };
+    letters.drawString(this.ctx, this.MON_NAMES[month], p.x, p.y, 1);
+  },
+
+  drawCurrWeekIndicator: function(week, isLeftSide) {
+    'use strict';
+    var unit = 3,
+        delta = isLeftSide ? -unit : unit,
+        p = {
+          x: isLeftSide ? SX - DX - unit + 2 : SX + DW * CW + DX, 
+          y: SY + CH * week + CH / 2 - 1
+        };
+    this.ctx.beginPath();
+    this.ctx.moveTo(p.x, p.y);
+    this.ctx.lineTo(p.x + delta, p.y - unit);
+    this.ctx.lineTo(p.x + delta, p.y + unit);
+    this.ctx.closePath();
+    this.ctx.fill();
   },
 
   drawDate: function(day, week, date, isToday) {
@@ -184,4 +323,5 @@ var watch = {
     d.setDate(d.getDate() - d.getDay());
     return d;
   },
-}
+};
+

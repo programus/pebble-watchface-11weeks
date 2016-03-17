@@ -94,7 +94,7 @@
       }
     }
 
-    console.log('Got options: ' + JSON.stringify(options));
+    // console.log('Got options: ' + JSON.stringify(options));
     return options;
   }
 
@@ -124,10 +124,12 @@
   }
 
   function drawWatch(canvas) {
-    images.init();
     var canvas = document.getElementById('watch');
-    watch.setCanvas(canvas);
-    watch.beginDraw();
+    images.init(function () {
+      watch.getConfig = getConfigData;
+      watch.setCanvas(canvas);
+      watch.beginDraw();
+    });
   }
  
   var submitButton = document.getElementById('submit_button');
