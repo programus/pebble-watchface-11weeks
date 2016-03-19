@@ -142,9 +142,12 @@ var watch = {
     if (!this.imageBuff.buff || minTime != this.imageBuff.time) {
       this.drawBackground();
       this.drawCalendar(time);
-      imgData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
-      this.imageBuff.buff = imgData;
-      this.imageBuff.time = minTime;
+      try {
+        imgData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+        this.imageBuff.buff = imgData;
+        this.imageBuff.time = minTime;
+      } catch (e) {
+      }
     } else {
       this.ctx.putImageData(this.imageBuff.buff, 0, 0);
     }
