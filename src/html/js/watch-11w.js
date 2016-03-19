@@ -194,7 +194,7 @@ var watch = {
 
   drawBackground: function () {
     'use strict';
-    this.ctx.drawImage(images.background, 0.5, 0.5);
+    this.ctx.drawImage(images.background, 0, 0);
   },
 
   drawCalendar: function(time) {
