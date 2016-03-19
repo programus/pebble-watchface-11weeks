@@ -26,7 +26,6 @@ var images = {
     phoneBattery: 'phone_battery.png',
     phoneBatteryCharging: 'phone_battery_charging.png',
     battery: 'watch_battery.png',
-    batteryCharging: 'watch_battery_charging.png',
     yesNo: 'yes_no.png'
   },
 
@@ -154,7 +153,88 @@ var watch = {
       this.drawSeconds(time);
     }
 
+    if (config['battery-layer']) {
+      this.drawBattery(7);
+    }
+
+    if (config['bt-phone-layer']) {
+      this.drawBtPhone();
+    }
+
     this.beginDraw();
+  },
+
+  drawBattery: function (level) {
+    'use strict';
+    var MARGIN = 2,
+        pImg = {
+          x: SX - 3 - MARGIN - numbers.tinySize.w - images.battery.width,
+          y: SY + CH * WN - 1
+        },
+        p = {
+          x: pImg.x + images.battery.width + MARGIN,
+          y: pImg.y + Math.floor((images.battery.height - numbers.tinySize.h) / 2) + 1
+        };
+    this.ctx.drawImage(images.battery, pImg.x, pImg.y);
+    numbers.drawTiny(this.ctx, level, p.x, p.y);
+  },
+
+  drawBtPhone: function () {
+    'use strict';
+    var battery = navigator.battery || navigator.webkitBattery || navigator.mozBattery,
+        self = this,
+        handleBattery = function (drawer, bat) {
+          'use strict';
+          if (bat) {
+            drawer.drawPhone(bat);
+          } else {
+            drawer.drawBt();
+          }
+        };
+    if (navigator.getBattery) {
+      navigator.getBattery().then(function (b) {
+        handleBattery(self, b);
+      });
+    } else {
+      handleBattery(self, battery);
+    }
+  },
+
+  drawBt: function () {
+    'use strict';
+    var MARGIN = 1,
+        pImg = {
+          x: SX + CW * DW + 1,
+          y: SY + CH * WN + 0
+        },
+        p = {
+          x: pImg.x + images.btMark.width + MARGIN,
+          y: pImg.y + Math.floor((images.btMark.height - images.yesNo.height) / 2)
+        };
+    this.ctx.drawImage(images.btMark, pImg.x, pImg.y);
+    this.ctx.drawImage(images.yesNo, 0, 0, images.yesNo.width / 2, images.yesNo.height, p.x, p.y, images.yesNo.width / 2, images.yesNo.height);
+  },
+
+  drawPhone: function (battery) {
+    'use strict';
+    var MARGIN = 1,
+        pImg = {
+          x: SX + CW * DW + 1 + (MARGIN + numbers.tinySize.w) * 2,
+          y: SY + CH * WN - 1
+        },
+        p = {
+          x: pImg.x - (MARGIN + numbers.tinySize.w) * 2,
+          y: pImg.y + Math.floor((images.phoneBattery.height - numbers.tinySize.h) / 2) + 1
+        },
+        level = Math.round(battery.level * 100);
+    this.ctx.drawImage(battery.charing ? images.phoneBatteryCharging : images.phoneBattery, pImg.x, pImg.y);
+    if (level < 100) {
+      numbers.drawTiny(this.ctx, level / 10, p.x, p.y);
+      p.x += numbers.tinySize.w + MARGIN;
+      numbers.drawTiny(this.ctx, level, p.x, p.y);
+    } else {
+      letters.drawString(this.ctx, 'FL', p.x, p.y, MARGIN);
+    }
   },
 
   drawSeconds: function (time) {
