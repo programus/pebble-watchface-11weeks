@@ -109,6 +109,9 @@ var watch = {
     "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
   ],
 
+  FRAME_W: 70,
+  FRAME_H: 82,
+
 
   setCanvas: function(canvas) {
     'use strict';
@@ -162,6 +165,10 @@ var watch = {
 
     if (config['bt-phone-layer']) {
       this.drawBtPhone();
+    }
+
+    if (config['frame-layer']) {
+      this.drawFrame(time);
     }
 
     this.beginDraw();
@@ -288,7 +295,7 @@ var watch = {
 
   drawHourMinute: function(time) {
     'use strict';
-    var comp = this.ctx.globalCompositeOperation;
+    this.ctx.save();
     this.ctx.globalCompositeOperation = 'lighter';
     var x1 = SX, x2 = SX + CW * 4, y1 = SY, y2 = SY + CH * 6,
         hours = time.getHours(), 
@@ -297,13 +304,12 @@ var watch = {
     numbers.drawBig(this.ctx, hours, x2, y1);
     numbers.drawBig(this.ctx, minutes / 10, x1, y2);
     numbers.drawBig(this.ctx, minutes, x2, y2);
-    this.ctx.globalCompositeOperation = comp;
+    this.ctx.restore();
   },
 
   drawDates: function(time) {
     'use strict';
-    var comp = this.ctx.globalCompositeOperation,
-        st = this.get1stDay(time),
+    var st = this.get1stDay(time),
         week, day,
         includeToday,
         needDisplayMonth,
@@ -334,8 +340,6 @@ var watch = {
         this.drawCurrWeekIndicator(week, false);
       }
     }
-
-    this.ctx.globalCompositeOperation = comp;
   },
 
   drawYear: function(year, week) {
@@ -364,18 +368,21 @@ var watch = {
 
   drawCurrWeekIndicator: function(week, isLeftSide) {
     'use strict';
-    var unit = 3,
+    var unit = 2,
         delta = isLeftSide ? -unit : unit,
         p = {
-          x: isLeftSide ? SX - DX - unit + 2 : SX + DW * CW + DX, 
-          y: SY + CH * week + CH / 2 - 1
+          x: (isLeftSide ? SX - DX - unit : SX + DW * CW + DX) + 0.5, 
+          y: SY + CH * week + CH / 2 - 1 + 0.5
         };
+    this.ctx.save();
     this.ctx.beginPath();
     this.ctx.moveTo(p.x, p.y);
     this.ctx.lineTo(p.x + delta, p.y - unit);
     this.ctx.lineTo(p.x + delta, p.y + unit);
     this.ctx.closePath();
+    this.ctx.stroke();
     this.ctx.fill();
+    this.ctx.restore();
   },
 
   drawDate: function(day, week, date, isToday) {
@@ -384,6 +391,7 @@ var watch = {
       x: SX + DX + CW * day, 
       y: SY + DY + CH * week
     };
+    this.ctx.save();
     this.ctx.globalCompositeOperation = 'difference';
     if (date > 9) {
       numbers.drawTiny(this.ctx, Math.floor(date / 10), startPoint.x, startPoint.y);
@@ -397,6 +405,7 @@ var watch = {
       this.ctx.globalCompositeOperation = 'lighter';
       this.ctx.strokeRect(startPoint.x - DX + 0.5, SY - CH + 3.5, CW - 2, CH - 4);
     }
+    this.ctx.restore();
   },
 
   get1stDay: function(time) {
@@ -406,5 +415,209 @@ var watch = {
     d.setDate(d.getDate() - d.getDay());
     return d;
   },
+
+  drawFrame: function (time) {
+    this.drawFrameScale();
+    this.drawHourLine(time);
+    this.drawMinuteLine(time);
+  },
+
+  drawFrameScale: function () {
+    var scalePoints = [
+      [11, 0, 1, 1],
+      [23, 0, 1, 1],
+      [24, 0, 1, 1],
+      [34, 0, 1, 1],
+      [44, 0, 1, 1],
+      [53, 0, 1, 1],
+      [62, 0, 1, 1],
+      [71, 0, 1, 1],
+      [72, 0, 1, 1],
+      [81, 0, 1, 1],
+      [90, 0, 1, 1],
+      [99, 0, 1, 1],
+      [109, 0, 1, 1],
+      [119, 0, 1, 1],
+      [120, 0, 1, 1],
+      [132, 0, 1, 1],
+      [24, 1, 1, 1],
+      [71, 1, 1, 1],
+      [72, 1, 1, 1],
+      [119, 1, 1, 1],
+      [24, 2, 1, 1],
+      [71, 2, 1, 1],
+      [72, 2, 1, 1],
+      [119, 2, 1, 1],
+      [0, 4, 1, 1],
+      [143, 4, 1, 1],
+      [0, 19, 1, 1],
+      [143, 19, 1, 1],
+      [0, 31, 1, 1],
+      [143, 31, 1, 1],
+      [0, 42, 1, 1],
+      [143, 42, 1, 1],
+      [0, 43, 1, 1],
+      [1, 43, 1, 1],
+      [2, 43, 1, 1],
+      [141, 43, 1, 1],
+      [142, 43, 1, 1],
+      [143, 43, 1, 1],
+      [0, 51, 1, 1],
+      [143, 51, 1, 1],
+      [0, 60, 1, 1],
+      [143, 60, 1, 1],
+      [0, 68, 1, 1],
+      [143, 68, 1, 1],
+      [0, 76, 1, 1],
+      [143, 76, 1, 1],
+      [0, 83, 1, 1],
+      [1, 83, 1, 1],
+      [2, 83, 1, 1],
+      [141, 83, 1, 1],
+      [142, 83, 1, 1],
+      [143, 83, 1, 1],
+      [0, 84, 1, 1],
+      [1, 84, 1, 1],
+      [2, 84, 1, 1],
+      [141, 84, 1, 1],
+      [142, 84, 1, 1],
+      [143, 84, 1, 1],
+      [0, 91, 1, 1],
+      [143, 91, 1, 1],
+      [0, 99, 1, 1],
+      [143, 99, 1, 1],
+      [0, 107, 1, 1],
+      [143, 107, 1, 1],
+      [0, 116, 1, 1],
+      [143, 116, 1, 1],
+      [0, 124, 1, 1],
+      [1, 124, 1, 1],
+      [2, 124, 1, 1],
+      [141, 124, 1, 1],
+      [142, 124, 1, 1],
+      [143, 124, 1, 1],
+      [0, 125, 1, 1],
+      [143, 125, 1, 1],
+      [0, 136, 1, 1],
+      [143, 136, 1, 1],
+      [0, 148, 1, 1],
+      [143, 148, 1, 1],
+      [0, 163, 1, 1],
+      [143, 163, 1, 1],
+      [24, 165, 1, 1],
+      [71, 165, 1, 1],
+      [72, 165, 1, 1],
+      [119, 165, 1, 1],
+      [24, 166, 1, 1],
+      [71, 166, 1, 1],
+      [72, 166, 1, 1],
+      [119, 166, 1, 1],
+      [11, 167, 1, 1],
+      [23, 167, 1, 1],
+      [24, 167, 1, 1],
+      [34, 167, 1, 1],
+      [44, 167, 1, 1],
+      [53, 167, 1, 1],
+      [62, 167, 1, 1],
+      [71, 167, 1, 1],
+      [72, 167, 1, 1],
+      [81, 167, 1, 1],
+      [90, 167, 1, 1],
+      [99, 167, 1, 1],
+      [109, 167, 1, 1],
+      [119, 167, 1, 1],
+      [120, 167, 1, 1],
+      [132, 167, 1, 1]
+    ],
+    i, p;
+
+    for (i = 0; i < scalePoints.length; i++) {
+      p = scalePoints[i];
+      this.ctx.fillRect(p[0], p[1], p[2], p[3]);
+    }
+  },
+
+  drawHourLine: function (time) {
+    'use strict';
+    var min = (time.getHours() % 12) * 60 + time.getMinutes(),
+        angle = min * Math.PI * 2 / 720;
+    this.drawFrameLine(time, angle, this.FRAME_W, this.FRAME_H, true);
+  },
+
+  drawMinuteLine: function (time) {
+    'use strict';
+    var sec = time.getMinutes() * 60 + time.getSeconds(),
+        angle = sec * Math.PI * 2 / 3600;
+    this.drawFrameLine(time, angle, this.FRAME_W, this.FRAME_H, false);
+  },
+
+  drawFrameLine: function (time, angle, w, h, isLine) {
+    'use strict';
+    var center = {
+      x: this.canvas.width / 2 - 0.5,
+      y: this.canvas.height / 2 - 0.5
+    };  
+
+    this.ctx.save();
+    if (isLine) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(center.x, center.y);
+      this.ctx.arc(center.x, center.y, this.canvas.width + this.canvas.height, -Math.PI / 2, angle - Math.PI / 2, false);
+      this.ctx.clip();
+
+      this.ctx.strokeRect(center.x - w, center.y - h, w * 2 + 1, h * 2 + 1);
+    } else if (time.getMilliseconds() < 650) {
+      var end = {
+        x: 0, 
+        y: 0
+      };
+      if (angle === 0) {
+        end.y = -h;
+      } else if (angle == Math.PI) {
+        end.y = h;
+      } else {
+        angle -= Math.PI / 2;
+        var rate = 1 / Math.tan(angle);
+        end.y = (angle < 0 || angle > Math.PI) ? -h : h;
+        end.x = Math.round(end.y * rate);
+        if (Math.abs(end.x) > w) {
+          end.x = Math.sign(end.x) * w;
+          end.y = Math.round(end.x / rate);
+        }
+      }
+      var p = {
+        x: center.x + end.x + Math.sign(end.x) * 0.5, 
+        y: center.y + end.y + Math.sign(end.y) * 0.5
+      }, 
+          PATH_SZ = 2,
+          isCorner = w - Math.abs(end.x) < PATH_SZ && h - Math.abs(end.y) < PATH_SZ,
+          rotateAngle, 
+          unit = 2,
+          offset = 2;
+
+      if (Math.abs(end.y) === h) {
+        rotateAngle = Math.sign(end.y) * Math.PI / 2;
+        if (isCorner) {
+          rotateAngle -= Math.sign(end.x) * Math.sign(end.y) * Math.PI / 4;
+        }
+      } else {
+        rotateAngle = end.x > 0 ? 0 : Math.PI;
+        if (isCorner) {
+          rotateAngle += Math.sign(end.x) * Math.sign(end.y) * Math.PI / 4;
+        }
+      }
+
+      this.ctx.translate(p.x + 0.5, p.y + 0.5);
+      this.ctx.rotate(rotateAngle);
+      this.ctx.beginPath();
+      this.ctx.moveTo(-offset, 0);
+      this.ctx.lineTo(-offset - unit, -unit);
+      this.ctx.lineTo(-offset - unit, unit);
+      this.ctx.closePath();
+      this.ctx.stroke();
+      this.ctx.fill();
+    }
+    this.ctx.restore();
+  }
 };
 
