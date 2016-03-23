@@ -1,5 +1,3 @@
-'use strict';
-
 var SX = 23,    // start point x
     SY = 18,    // start point y
     DX = 3,     // margin x
@@ -34,7 +32,14 @@ var images = {
     // load images
     var key,
         img,
-        count = 0;
+        count = 0,
+        self, 
+        iload = function () {
+          count++;
+          if (count === Object.keys(self.imagePaths).length) {
+            doneAction();
+          }
+        };
 
     if (Object.keys(this).length <= 3) {
       for (key in this.imagePaths) {
@@ -42,12 +47,7 @@ var images = {
         img.src = this.IMAGE_PATH + this.imagePaths[key];
         this[key] = img;
         self = this;
-        img.onload = function () {
-          count++;
-          if (count === Object.keys(self.imagePaths).length) {
-            doneAction();
-          }
-        }
+        img.onload = iload;
       }
     }
   } 
@@ -58,14 +58,17 @@ var numbers = {
   tinySize: {w: 3, h: 5},
 
   __drawNumber: function (ctx, n, x, y, src, size) {
+    'use strict';
     ctx.drawImage(src, n * size.w, 0, size.w, size.h, x, y, size.w, size.h);
   },
 
   drawBig: function (ctx, n, x, y) {
+    'use strict';
     this.__drawNumber(ctx, Math.floor(n % 10), x, y, images.bigNumbers, this.bigSize);
   },
 
   drawTiny: function (ctx, n, x, y) {
+    'use strict';
     this.__drawNumber(ctx, Math.floor(n % 10), x, y, images.numbers, this.tinySize);
   }
 };
@@ -116,23 +119,27 @@ var watch = {
   setCanvas: function(canvas) {
     'use strict';
     this.canvas = canvas;
-    this.ctx = canvas.getContext('2d');
-    var vendors = ['', 'o', 'ms', 'moz', 'webkit'],
-        i, vendor;
-    for (i = 0; i < vendors.length; i++) {
-      vendor = vendors[i];
-      this.ctx[vendor + (vendor.length === 0 ? 'i' : 'I') + 'mageSmoothingEnabled'] = false;
+    if (canvas.getContext) {
+      this.ctx = canvas.getContext('2d');
+      var vendors = ['', 'o', 'ms', 'moz', 'webkit'],
+          i, vendor;
+      for (i = 0; i < vendors.length; i++) {
+        vendor = vendors[i];
+        this.ctx[vendor + (vendor.length === 0 ? 'i' : 'I') + 'mageSmoothingEnabled'] = false;
+      }
+      this.ctx.strokeStyle = '#fff';
+      this.ctx.fillStyle = '#fff';
     }
-    this.ctx.strokeStyle = '#fff';
-    this.ctx.fillStyle = '#fff';
   },
 
   beginDraw: function() {
     'use strict';
-    var self = this;
-    window.requestAnimationFrame(function(time) {
-      self.draw(time);
-    });
+    if (this.ctx) {
+      var self = this;
+      window.requestAnimationFrame(function(time) {
+        self.draw(time);
+      });
+    }
   },
 
   draw: function() {
@@ -194,7 +201,6 @@ var watch = {
     var battery = navigator.battery || navigator.webkitBattery || navigator.mozBattery,
         self = this,
         handleBattery = function (drawer, bat) {
-          'use strict';
           if (bat) {
             drawer.drawPhone(bat);
           } else {
@@ -417,12 +423,14 @@ var watch = {
   },
 
   drawFrame: function (time) {
+    'use strict';
     this.drawFrameScale();
     this.drawHourLine(time);
     this.drawMinuteLine(time);
   },
 
   drawFrameScale: function () {
+    'use strict';
     var scalePoints = [
       [11, 0, 1, 1],
       [23, 0, 1, 1],
