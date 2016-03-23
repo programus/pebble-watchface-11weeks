@@ -95,7 +95,10 @@
 
     <div class='item-container'>
       <div class='button-container'>
-        <input id='submit_button' type='button' class='item-button' value='SAVE'>
+        <input id='submit_button' type='button' class='item-button' value='SAVE' />
+        <div id='submit_button-en' style='display:none;'>SAVE</div>
+        <div id='submit_button-zh-Hans' style='display:none;'>保存</div>
+        <div id='submit_button-zh-Hant' style='display:none;'>存儲</div>
       </div>
     </div>
   </body>
@@ -184,6 +187,21 @@
 
     return ret;
   }
+
+  function setUILanguage(lang) {
+    var ctrls = {
+      'submit_button': 'value'
+    };
+    document.getElementsByTagName('html')[0].setAttribute('lang', getDefaultLanguage(navigator.language || navigator.userLanguage));
+
+    for (var c in ctrls) {
+      var ctrl = document.getElementById(c);
+      var div = document.getElementById(c + '-' + lang);
+      if (ctrl && div) {
+        ctrl[ctrls[c]] = div.innerHTML;
+      }
+    }
+  }
  
   var submitButton = document.getElementById('submit_button');
   submitButton.addEventListener('click', function() {
@@ -202,7 +220,7 @@
       ctrl.checked = value ? false : true;
     }
     drawWatch();
-    document.getElementsByTagName('html')[0].setAttribute('lang', getDefaultLanguage(navigator.language || navigator.userLanguage));
+    setUILanguage(getDefaultLanguage(navigator.language || navigator.userLanguage));
   })();
   </script>
 </html>
