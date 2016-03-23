@@ -7,6 +7,14 @@
   <script src='js/anim-lib.js'></script>
   <script src='js/watch-11w.js'></script>
   <style>
+  .en, .zh-Hans, .zh-Hant {
+    display: none;
+  }
+
+  .en:lang(en), .zh-Hans:lang(zh-Hans), zh-Hant:lang(zh-Hant) {
+    display: block;
+  }
+
   .title {
     padding: 15px 10px;
     text-transform: uppercase;
@@ -28,35 +36,58 @@
   </head>
 
   <body>
-    <h1 class='title'>11 Weeks Configuration</h1>
+    <h1 class='title'>
+      <div class='en'>11 Weeks Configuration</div>
+      <div class='zh-Hans'>11周 表盘配置</div>
+      <div class='zh-Hant'>11周 錶盤設定</div>
+    </h1>
 
     <div class='item-container'>
-      <div class='item-container-header'>Preview</div>
+      <div class='item-container-header'>
+        <div class='en'>Preview</div>
+        <div class='zh-Hans'>预览</div>
+        <div class='zh-Hant'>預覽</div>
+      </div>
       <div class='item-container-content watch'>
         <div class='item'>
           <canvas id='watch' width='144' height='168'>
+            <div class='en'>I am sorry that the preview (using &lt;canvas&gt;) is not supported by your device.</div>
+            <div class='zh-Hans'>很抱歉，您的设备不支持（使用了&lt;canvas&gt;的）预览。</div>
+            <div class='zh-Hant'>很抱歉，您的設備不支持（使用了&lt;canvas&gt;的）預覽。</div>
           </canvas>
         </div>
       </div>
     </div>
 
     <div class='item-container'>
-      <div class='item-container-header'>Optional Components</div>
+      <div class='item-container-header'>
+        <div class='en'>Optional Components</div>
+        <div class='zh-Hans'>可选组件</div>
+        <div class='zh-Hant'>可選部件</div>
+      </div>
       <div class='item-container-content'>
         <label class='item'>
-          Seconds (refresh per sec)
+          <div class='en'>Seconds (refresh per sec)</div>
+          <div class='zh-Hans'>记秒（需每秒刷新）</div>
+          <div class='zh-Hant'>記秒（需每秒更新）</div>
           <input id='sec-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
-          Outline Frame (refresh per sec)
+          <div class='en'>Outline Frame (refresh per sec)</div>
+          <div class='zh-Hans'>计时外框（需每秒刷新）</div>
+          <div class='zh-Hant'>計時外框（需每秒更新）</div>
           <input id='frame-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
-          Pebble Battery
+          <div class='en'>Pebble Battery</div>
+          <div class='zh-Hans'>手表电量</div>
+          <div class='zh-Hant'>手錶電量</div>
           <input id='battery-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
-          Phone Battery &amp; Bluetooth
+          <div class='en'>Phone Battery &amp; Bluetooth</div>
+          <div class='zh-Hans'>手机电量与蓝牙</div>
+          <div class='zh-Hant'>手機電量與藍牙</div>
           <input id='bt-phone-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
       </div>
@@ -131,6 +162,28 @@
       watch.beginDraw();
     });
   }
+
+  function getDefaultLanguage(lang) {
+    var ret = 'en',
+        hans = ['-hans', '-cn'], 
+        i,
+        isHans = false;
+    if (lang) {
+      lang = lang.toLowerCase();
+      if (lang.startsWith('zh')) {
+        for (i = 0; i < hans.length; i++) {
+          if (lang.indexOf(hans[i]) >= 0) {
+            isHans = true;
+            break;
+          }
+        }
+
+        ret = isHans ? 'zh-Hans' : 'zh-Hant';
+      }
+    }
+
+    return ret;
+  }
  
   var submitButton = document.getElementById('submit_button');
   submitButton.addEventListener('click', function() {
@@ -149,6 +202,7 @@
       ctrl.checked = value ? false : true;
     }
     drawWatch();
+    document.getElementsByTagName('html')[0].setAttribute('lang', getDefaultLanguage(navigator.language || navigator.userLanguage));
   })();
   </script>
 </html>
