@@ -11,7 +11,7 @@
     display: none;
   }
 
-  .en:lang(en), .zh-Hans:lang(zh-Hans), zh-Hant:lang(zh-Hant) {
+  .en:lang(en), .zh-Hans:lang(zh-Hans), .zh-Hant:lang(zh-Hant) {
     display: block;
   }
 
@@ -166,7 +166,7 @@
     });
   }
 
-  function getDefaultLanguage(lang) {
+  function getSupportedLanguage(lang) {
     var ret = 'en',
         hans = ['-hans', '-cn'], 
         i,
@@ -189,10 +189,11 @@
   }
 
   function setUILanguage(lang) {
+    lang = getSupportedLanguage(lang);
     var ctrls = {
       'submit_button': 'value'
     };
-    document.getElementsByTagName('html')[0].setAttribute('lang', getDefaultLanguage(navigator.language || navigator.userLanguage));
+    document.getElementsByTagName('html')[0].setAttribute('lang', lang);
 
     for (var c in ctrls) {
       var ctrl = document.getElementById(c);
@@ -220,7 +221,7 @@
       ctrl.checked = value ? false : true;
     }
     drawWatch();
-    setUILanguage(getDefaultLanguage(navigator.language || navigator.userLanguage));
+    setUILanguage(navigator.language || navigator.userLanguage);
   })();
   </script>
 </html>
