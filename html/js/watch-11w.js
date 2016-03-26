@@ -14,7 +14,7 @@ var SEC_SX = SX,
 
 
 var images = {
-  IMAGE_PATH: 'img/',
+  IMAGE_PATH: '../resources/images/',
   imagePaths: {
     background: 'background.png',
     bigNumbers: 'big_number_3x5.png',
