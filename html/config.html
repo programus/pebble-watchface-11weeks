@@ -7,11 +7,11 @@
   <script src='js/anim-lib.js'></script>
   <script src='js/watch-11w.js'></script>
   <style>
-  .en, .zh-Hans, .zh-Hant {
+  .hide {
     display: none;
   }
 
-  .en:lang(en), .zh-Hans:lang(zh-Hans), .zh-Hant:lang(zh-Hant) {
+  .show {
     display: block;
   }
 
@@ -192,7 +192,18 @@
     lang = getSupportedLanguage(lang);
     var ctrls = {
       'submit_button': 'value'
-    };
+    }, langClasses = [
+      'en', 'zh-Hans', 'zh-Hant'
+    ], lables, i, j, isSame;
+
+    for (i = 0; i < langClasses.length; i++) {
+      labels = document.getElementsByClassName(langClasses[i]);
+      isSame = lang === langClasses[i];
+      for (j = 0; j < labels.length; j++) {
+        labels[j].classList.remove(isSame ? 'hide' : 'show');
+        labels[j].classList.add(isSame ? 'show' : 'hide');
+      }
+    }
     document.getElementsByTagName('html')[0].setAttribute('lang', lang);
 
     for (var c in ctrls) {
