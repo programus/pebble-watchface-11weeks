@@ -2,6 +2,7 @@
 <html>
   <head>
   <title>11 Weeks Configuration</title>
+  <meta charset='UTF-8' />
   <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
   <script src='js/slate.min.js'></script>
   <script src='js/anim-lib.js'></script>
@@ -29,8 +30,18 @@
     text-align: center;
   }
 
+  #watch-background {
+    background-color: black;
+    width: 144px;
+    height: 168px;
+    padding: 0px;
+    margin: 0px;
+    display: inline-block;
+  }
+
   #watch {
     background-color: black;
+    opacity: 0.8;
   }
   </style>
   </head>
@@ -50,11 +61,13 @@
       </div>
       <div class='item-container-content watch'>
         <div class='item'>
-          <canvas id='watch' width='144' height='168'>
-            <div class='en'>I am sorry that the preview (using &lt;canvas&gt;) is not supported by your device.</div>
-            <div class='zh-Hans'>很抱歉，您的设备不支持（使用了&lt;canvas&gt;的）预览。</div>
-            <div class='zh-Hant'>很抱歉，您的設備不支持（使用了&lt;canvas&gt;的）預覽。</div>
-          </canvas>
+          <div id='watch-background'>
+            <canvas id='watch' width='144' height='168'>
+              <div class='en'>I am sorry that the preview (using &lt;canvas&gt;) is not supported by your device.</div>
+              <div class='zh-Hans'>很抱歉，您的设备不支持（使用了&lt;canvas&gt;的）预览。</div>
+              <div class='zh-Hant'>很抱歉，您的設備不支持（使用了&lt;canvas&gt;的）預覽。</div>
+            </canvas>
+          </div>
         </div>
       </div>
     </div>

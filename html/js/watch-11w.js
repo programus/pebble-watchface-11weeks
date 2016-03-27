@@ -178,11 +178,6 @@ var watch = {
     if (config['frame-layer']) {
       this.drawFrame(time);
     }
-
-    this.ctx.save();
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.32)';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    this.ctx.restore();
   },
 
   drawBattery: function (level) {
