@@ -51,6 +51,7 @@
       <div class='en'>11 Weeks Configuration</div>
       <div class='zh-Hans'>11周 表盘配置</div>
       <div class='zh-Hant'>11周 錶盤設定</div>
+      <div class='ja'>11週間　設定</div>
     </h1>
 
     <div class='item-container'>
@@ -58,6 +59,7 @@
         <div class='en'>Preview</div>
         <div class='zh-Hans'>预览</div>
         <div class='zh-Hant'>預覽</div>
+        <div class='ja'>プレビュー</div>
       </div>
       <div class='item-container-content watch'>
         <div class='item'>
@@ -66,6 +68,7 @@
               <div class='en'>I am sorry that the preview (using &lt;canvas&gt;) is not supported by your device.</div>
               <div class='zh-Hans'>很抱歉，您的设备不支持（使用了&lt;canvas&gt;的）预览。</div>
               <div class='zh-Hant'>很抱歉，您的設備不支持（使用了&lt;canvas&gt;的）預覽。</div>
+              <div class='ja'>&lt;canvas&gt;をサポートしないデバイスを使っているため、プレビューできません。</div>
             </canvas>
           </div>
         </div>
@@ -77,30 +80,35 @@
         <div class='en'>Optional Components</div>
         <div class='zh-Hans'>可选组件</div>
         <div class='zh-Hant'>可選部件</div>
+        <div class='ja'>オプショナルコンポーネント</div>
       </div>
       <div class='item-container-content'>
         <label class='item'>
           <div class='en'>Seconds (refresh per sec)</div>
           <div class='zh-Hans'>记秒（需每秒刷新）</div>
           <div class='zh-Hant'>記秒（需每秒更新）</div>
+          <div class='ja'>秒（秒更新必要）</div>
           <input id='sec-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
           <div class='en'>Outline Frame (refresh per sec)</div>
           <div class='zh-Hans'>计时外框（需每秒刷新）</div>
           <div class='zh-Hant'>計時外框（需每秒更新）</div>
+          <div class='ja'>外枠（秒更新必要）</div>
           <input id='frame-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
           <div class='en'>Pebble Battery</div>
           <div class='zh-Hans'>手表电量</div>
           <div class='zh-Hant'>手錶電量</div>
+          <div class='ja'>時計電池量</div>
           <input id='battery-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
           <div class='en'>Phone Battery &amp; Bluetooth</div>
           <div class='zh-Hans'>手机电量与蓝牙</div>
           <div class='zh-Hant'>手機電量與藍牙</div>
+          <div class='ja'>携帯電池量とBluetooth</div>
           <input id='bt-phone-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
       </div>
@@ -112,6 +120,7 @@
         <div id='submit_button-en' style='display:none;'>SAVE</div>
         <div id='submit_button-zh-Hans' style='display:none;'>保存</div>
         <div id='submit_button-zh-Hant' style='display:none;'>存儲</div>
+        <div id='submit_button-ja' style='display:none;'>保存</div>
       </div>
     </div>
   </body>
@@ -195,6 +204,8 @@
         }
 
         ret = isHans ? 'zh-Hans' : 'zh-Hant';
+      } else if (lang.startsWith('ja')) {
+        ret = 'ja';
       }
     }
 
@@ -206,7 +217,7 @@
     var ctrls = {
       'submit_button': 'value'
     }, langClasses = [
-      'en', 'zh-Hans', 'zh-Hant'
+      'en', 'zh-Hans', 'zh-Hant', 'ja'
     ], lables, i, j, isSame;
 
     for (i = 0; i < langClasses.length; i++) {
