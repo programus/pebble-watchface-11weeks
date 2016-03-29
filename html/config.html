@@ -8,6 +8,17 @@
   <script src='js/anim-lib.js'></script>
   <script src='js/watch-11w.js'></script>
   <style>
+  ul {
+    list-style: none;
+    margin-left: 0;
+    padding-left: 1em;
+    text-indent: -1em;
+  }
+
+  ul li:before {
+    content: "* ";
+  }
+
   .hide {
     display: none;
   }
@@ -85,16 +96,16 @@
       <div class='item-container-content'>
         <label class='item'>
           <div class='en'>Seconds (refresh per sec)</div>
-          <div class='zh-Hans'>记秒（需每秒刷新）</div>
-          <div class='zh-Hant'>記秒（需每秒更新）</div>
-          <div class='ja'>秒（秒更新必要）</div>
+          <div class='zh-Hans'>记秒</div>
+          <div class='zh-Hant'>記秒</div>
+          <div class='ja'>秒</div>
           <input id='sec-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
           <div class='en'>Outline Frame (refresh per sec)</div>
-          <div class='zh-Hans'>计时外框（需每秒刷新）</div>
-          <div class='zh-Hant'>計時外框（需每秒更新）</div>
-          <div class='ja'>外枠（秒更新必要）</div>
+          <div class='zh-Hans'>计时外框</div>
+          <div class='zh-Hant'>計時外框</div>
+          <div class='ja'>外枠</div>
           <input id='frame-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
         <label class='item'>
@@ -111,6 +122,36 @@
           <div class='ja'>携帯電池量とBluetooth</div>
           <input id='bt-phone-layer' type='checkbox' class='item-toggle' checked='checked'>
         </label>
+      </div>
+      <div class='item-container-footer'>
+        <div class='en'>
+          <ul>
+            <li>The outline frame is using a timer and second tick, which will increase battery usage.</li>
+            <li>The seconds part need second tick, which will increase battery usage a little.</li>
+            <li>Minute tick will be used when outline frame and seconds be hidden, which will save power.</li>
+          </ul>
+        </div>
+        <div class='zh-Hans'>
+          <ul>
+            <li>计时外框需使用定时器并需要每秒刷新，会增加电量消耗。</li>
+            <li>记秒需要每秒刷新，会稍增加电量消耗。</li>
+            <li>隐藏计时外框和记秒部分，将改为每分刷新，可节省部分电量。</li>
+          </ul>
+        </div>
+        <div class='zh-Hant'>
+          <ul>
+            <li>計時外框需使用定時器並需每秒更新，將增加電量消耗。</li>
+            <li>記秒需每秒更新，將稍許增加電量消耗。</li>
+            <li>隱藏計時外框和記秒部分，將切為每分更新，可節省部分電量。</li>
+          </ul>
+        </div>
+        <div class='ja'>
+          <ul>
+            <li>「外枠」はタイマーと秒更新が必要なため、電池使用量が増えることになります。</li>
+            <li>「秒」は秒更新が必要なため、電池使用量が少し増えることになります。</li>
+            <li>「外枠」と「秒」を非表示にしたら、分更新になるため、電池使用量が少なくなります。</li>
+          </ul>
+        </div>
       </div>
     </div>
 
