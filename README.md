@@ -1,2 +1,2 @@
-# pebble-watchface-months
-A Watchface which display calendar of months
+# pebble-watchface-11weeks
+A Watchface which display calendar of 11 weeks
